@@ -43,7 +43,7 @@ int main(int argc, char *argv[]) {
     assert(buf != NULL);
 
     for(i=0; i<n; i++)
-	      buf[i] = amp*cos(freq*i*(TWO_PI/FS));
+	      buf[i] = amp*cosf(freq*i*(TWO_PI/FS));
 
     fwrite(buf, sizeof(short), n, f);
 

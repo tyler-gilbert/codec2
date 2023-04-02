@@ -146,11 +146,11 @@ int main(int argc, char *argv[]) {
 
     float w[k];
     for(int i=0; i<st; i++)
-        w[i] = 0.0;
+        w[i] = 0.0f;
     for(int i=st; i<=en; i++)
-        w[i] = 1.0;
+        w[i] = 1.0f;
     for(int i=en+1; i<k; i++)
-        w[i] = 0.0;
+        w[i] = 0.0f;
 
     /* apply weighting to codebook (rather than in search) */
     memcpy(vqw, vq, sizeof(vq));
@@ -161,13 +161,13 @@ int main(int argc, char *argv[]) {
     int indexes[num_stages], nvecs = 0; int vec_usage[m[0]];
     for(int i=0; i<m[0]; i++) vec_usage[i] = 0;
     float target[k], quantised[k];
-    float sqe = 0.0;
+    float sqe = 0.0f;
     while(fread(&target, sizeof(float), k, stdin) && (nvecs < num)) {
 	for(int i=0; i<k; i++)
             target[i] *= w[i];
 	int dont_count = 0;
 	/* optional clamping to lower limit or mean */
-	float mean = 0.0;
+	float mean = 0.0f;
 	for(int i=0; i<k; i++)
 	    mean += target[i];
 	mean /= k;         
@@ -181,7 +181,7 @@ int main(int argc, char *argv[]) {
 	quant_mbest(quantised, indexes, target, num_stages, vqw, vq, m, k, mbest_survivors);
 	if (dont_count == 0) {
 	    for(int i=st; i<=en; i++)
-		sqe += pow(target[i]-quantised[i], 2.0);
+		sqe += powf(target[i]-quantised[i], 2.0);
 	}
 	fwrite(&quantised, sizeof(float), k, stdout);
 	nvecs++;
@@ -233,7 +233,7 @@ void quant_mbest(float vec_out[],
         index[i] = 0;
     }
 
-    se1 = 0.0;
+    se1 = 0.0f;
     for(i=0; i<k; i++) {
         err[i] = vec_in[i];
         se1 += err[i]*err[i];
@@ -277,10 +277,10 @@ void quant_mbest(float vec_out[],
 
     /* OK put it all back together using best survivor */
     for(i=0; i<k; i++)
-        vec_out[i] = 0.0;
+        vec_out[i] = 0.0f;
     for(s=0; s<num_stages; s++) {
         int ind = indexes[s];
-        float se2 = 0.0;
+        float se2 = 0.0f;
         for(i=0; i<k; i++) {
             err[i] -= vqw[s*k*MAX_ENTRIES+ind*k+i];
             vec_out[i] += vq[s*k*MAX_ENTRIES+ind*k+i];

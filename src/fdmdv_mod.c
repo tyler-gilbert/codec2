@@ -102,7 +102,7 @@ int main(int argc, char *argv[])
 
 #ifdef CHANNEL_SIM
     foff = -100;
-    foff_phase_rect.real = 1.0; foff_phase_rect.imag = 0.0;
+    foff_phase_rect.real = 1.0f; foff_phase_rect.imag = 0.0f;
 #endif
 
     frames = 0;

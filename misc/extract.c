@@ -17,9 +17,9 @@ int main(int argc, char *argv[]) {
     int st = 0;
     int en = 17;
     int stride = NB_FEATURES;
-    float gain = 1.0;
+    float gain = 1.0f;
     int frame_delay = 1;
-    float pred = 0.0;
+    float pred = 0.0f;
     int removemean = 0;
     float lower = -1E32;
     
@@ -85,10 +85,10 @@ int main(int argc, char *argv[]) {
     
     for (f=0; f<frame_delay; f++)
         for(i=0; i<stride; i++)
-            features_prev[f][i] = 0.0;
+            features_prev[f][i] = 0.0f;
 
     while((fread(features, sizeof(float), stride, fin) == stride)) {
-	float mean = 0.0;
+	float mean = 0.0f;
 	for(i=st; i<=en; i++)
 	    mean += features[i];
 	mean /= (en-st+1);

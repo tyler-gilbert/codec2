@@ -127,9 +127,9 @@ int main(int argc, char *argv[]) {
     bool log_active = false;
 
     float time_to_sync = -1;
-    float start_secs = 0.0;
-    float len_secs = 0.0;
-    float skip_secs = 0.0;
+    float start_secs = 0.0f;
+    float len_secs = 0.0f;
+    float skip_secs = 0.0f;
 
     /* set up the default modem config */
     struct OFDM_CONFIG *ofdm_config = (struct OFDM_CONFIG *) calloc(1, sizeof (struct OFDM_CONFIG));
@@ -360,8 +360,8 @@ int main(int argc, char *argv[]) {
 
     complex float rx_syms[Nsymsperpacket]; float rx_amps[Nsymsperpacket];
     for(int i=0; i<Nsymsperpacket; i++) {
-        rx_syms[i] = 0.0;
-        rx_amps[i]= 0.0;
+        rx_syms[i] = 0.0f;
+        rx_amps[i]= 0.0f;
     }
 
     short rx_scaled[Nmaxsamperframe];
@@ -379,8 +379,8 @@ int main(int argc, char *argv[]) {
     int Tper = 0;
     int iter = 0;
     int parityCheckCount = 0;
-    float SNR3kdB = 0.0;
-    float sum_SNR3kdB = 0.0;
+    float SNR3kdB = 0.0f;
+    float sum_SNR3kdB = 0.0f;
     
     if (strlen(ofdm->data_mode) == 0)
         Ndiscard = NDISCARD; /* backwards compatibility with 700D/2020        */
@@ -627,7 +627,7 @@ int main(int argc, char *argv[]) {
             if (secs >= skip_secs) {
                 assert(fread(rx_scaled, sizeof (short), nin_frame/2, fin) == nin_frame/2);
                 fprintf(stderr,"  Skip!  Just introduced a nasty big timing slip\n");
-                skip_secs = 0.0; /* make sure we just introduce one error */
+                skip_secs = 0.0f; /* make sure we just introduce one error */
             }
         }
 
@@ -662,7 +662,7 @@ int main(int argc, char *argv[]) {
     int ret = 0;
     if (testframes == true) {
         float uncoded_ber = (float) Terrs / Tbits;
-        float coded_ber = 0.0;
+        float coded_ber = 0.0f;
 
         if (verbose != 0) {
             fprintf(stderr, "BER......: %5.4f Tbits: %5d Terrs: %5d Tpackets: %5d SNR3kdB: %5.2f\n", 

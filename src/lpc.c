@@ -107,7 +107,7 @@ void hanning_window(
   int i;	/* loop variable */
 
   for(i=0; i<Nsam; i++)
-    Wn[i] = Sn[i]*(0.5 - 0.5*cosf(2*PI*(float)i/(Nsam-1)));
+    Wn[i] = Sn[i]*(0.5 - 0.5f*cosf(2*PI*(float)i/(Nsam-1)));
 }
 
 /*---------------------------------------------------------------------------*\
@@ -129,7 +129,7 @@ void autocorrelate(
   int i,j;	/* loop variables */
 
   for(j=0; j<order+1; j++) {
-    Rn[j] = 0.0;
+    Rn[j] = 0.0f;
     for(i=0; i<Nsam-j; i++)
       Rn[j] += Sn[i]*Sn[i+j];
   }
@@ -163,12 +163,12 @@ void levinson_durbin(
   e = R[0];				/* Equation 38a, Makhoul */
 
   for(i=1; i<=order; i++) {
-    sum = 0.0;
+    sum = 0.0f;
     for(j=1; j<=i-1; j++)
       sum += a[i-1][j]*R[i-j];
-    k = -1.0*(R[i] + sum)/e;		/* Equation 38b, Makhoul */
+    k = -1.0f*(R[i] + sum)/e;		/* Equation 38b, Makhoul */
     if (fabsf(k) > 1.0)
-      k = 0.0;
+      k = 0.0f;
 
     a[i][i] = k;
 
@@ -180,7 +180,7 @@ void levinson_durbin(
 
   for(i=1; i<=order; i++)
     lpcs[i] = a[order][i];
-  lpcs[0] = 1.0;
+  lpcs[0] = 1.0f;
 }
 
 /*---------------------------------------------------------------------------*\
@@ -205,7 +205,7 @@ void inverse_filter(
   int i,j;	/* loop variables */
 
   for(i=0; i<Nsam; i++) {
-    res[i] = 0.0;
+    res[i] = 0.0f;
     for(j=0; j<=order; j++)
       res[i] += Sn[i-j]*a[j];
   }
@@ -276,7 +276,7 @@ void find_aks(
   autocorrelate(Wn,R,Nsam,order);
   levinson_durbin(R,a,order);
 
-  *E = 0.0;
+  *E = 0.0f;
   for(i=0; i<=order; i++)
     *E += a[i]*R[i];
   if (*E < 0.0)

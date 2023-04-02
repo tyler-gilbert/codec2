@@ -27,16 +27,16 @@
 int main() {
     FILE  *fprede;
     float  Sn[N], Sn_pre[N], Sn_de[N];
-    float  pre_mem = 0.0, de_mem = 0.0;
+    float  pre_mem = 0.0, de_mem = 0.0f;
     int    i, f;
 
     fprede = fopen("prede.txt", "wt");
     assert(fprede != NULL);
 
     for(i=0; i<N; i++)
-	Sn[i] = 0.0;
+	Sn[i] = 0.0f;
 
-    Sn[0]= 1.0;
+    Sn[0]= 1.0f;
 
     for(f=0; f<F; f++) {
 	pre_emp(Sn_pre, Sn, &pre_mem, N);
@@ -44,7 +44,7 @@ int main() {
 	for(i=0; i<N; i++) {
 	    fprintf(fprede, "%f\n", Sn_de[i]);
 	}
-	Sn[0] = 0.0;
+	Sn[0] = 0.0f;
     }
 
     fclose(fprede);

@@ -113,22 +113,22 @@ struct COHPSK *cohpsk_create(void)
 
     for (r=0; r<NCT_SYMB_BUF; r++) {
         for(c=0; c<COHPSK_NC*COHPSK_ND; c++) {
-            coh->ct_symb_buf[r][c].real = 0.0;
-            coh->ct_symb_buf[r][c].imag = 0.0;
+            coh->ct_symb_buf[r][c].real = 0.0f;
+            coh->ct_symb_buf[r][c].imag = 0.0f;
         }
     }
 
-    coh->ff_phase.real = 1.0; coh->ff_phase.imag = 0.0;
+    coh->ff_phase.real = 1.0f; coh->ff_phase.imag = 0.0f;
     coh->sync  = 0;
     coh->frame = 0;
-    coh->ratio = 0.0;
+    coh->ratio = 0.0f;
     coh->nin = COHPSK_M;
 
     /* clear sync window buffer */
 
     for (i=0; i<NSW*NSYMROWPILOT*COHPSK_M; i++) {
-        coh->ch_fdm_frame_buf[i].real = 0.0;
-        coh->ch_fdm_frame_buf[i].imag = 0.0;
+        coh->ch_fdm_frame_buf[i].real = 0.0f;
+        coh->ch_fdm_frame_buf[i].imag = 0.0f;
     }
 
     /* set up fdmdv states so we can use those modem functions */
@@ -144,8 +144,8 @@ struct COHPSK *cohpsk_create(void)
     fdmdv->fsep = COHPSK_RS*(1.0 + COHPSK_EXCESS_BW);
 
     for(c=0; c<COHPSK_NC*COHPSK_ND; c++) {
-	fdmdv->phase_tx[c].real = 1.0;
- 	fdmdv->phase_tx[c].imag = 0.0;
+	fdmdv->phase_tx[c].real = 1.0f;
+ 	fdmdv->phase_tx[c].imag = 0.0f;
 
         /* note non-linear carrier spacing to help PAPR, works v well in conjunction with CLIP */
 
@@ -158,13 +158,13 @@ struct COHPSK *cohpsk_create(void)
 
         //printf("c: %d %f %f\n",c,freq_hz,fdmdv->freq_pol[c]);
         for(i=0; i<COHPSK_NFILTER; i++) {
-            coh->rx_filter_memory[c][i].real = 0.0;
-            coh->rx_filter_memory[c][i].imag = 0.0;
+            coh->rx_filter_memory[c][i].real = 0.0f;
+            coh->rx_filter_memory[c][i].imag = 0.0f;
         }
 
         /* optional per-carrier amplitude weighting for testing */
 
-        coh->carrier_ampl[c] = 1.0;
+        coh->carrier_ampl[c] = 1.0f;
     }
     
     result = tau * FDMDV_FCENTRE/COHPSK_FS;
@@ -174,12 +174,12 @@ struct COHPSK *cohpsk_create(void)
 
     coh->fdmdv = fdmdv;
 
-    coh->sig_rms = coh->noise_rms = 0.0;
+    coh->sig_rms = coh->noise_rms = 0.0f;
 
     for(c=0; c<COHPSK_NC*COHPSK_ND; c++) {
         for (r=0; r<NSYMROW; r++) {
-            coh->rx_symb[r][c].real = 0.0;
-            coh->rx_symb[r][c].imag = 0.0;
+            coh->rx_symb[r][c].real = 0.0f;
+            coh->rx_symb[r][c].imag = 0.0f;
         }
     }
 
@@ -269,7 +269,7 @@ void bits_to_qpsk_symbols(COMP tx_symb[][COHPSK_NC*COHPSK_ND], int tx_bits[], in
     for(p_r=0; p_r<2; p_r++) {
         for(c=0; c<COHPSK_NC*COHPSK_ND; c++) {
             tx_symb[r][c].real = pilots_coh[p_r][c % COHPSK_NC]/sqrtf(COHPSK_ND);
-            tx_symb[r][c].imag = 0.0;
+            tx_symb[r][c].imag = 0.0f;
         }
         r++;
     }
@@ -277,7 +277,7 @@ void bits_to_qpsk_symbols(COMP tx_symb[][COHPSK_NC*COHPSK_ND], int tx_bits[], in
         for(c=0; c<COHPSK_NC*diversity; c++) {
             i = c*NSYMROW + data_r;
             bits = (tx_bits[2*i]&0x1)<<1 | (tx_bits[2*i+1]&0x1);
-            tx_symb[r][c] = fcmult(1.0/sqrtf(COHPSK_ND),qpsk_mod[bits]);
+            tx_symb[r][c] = fcmult(1.0f/sqrtf(COHPSK_ND),qpsk_mod[bits]);
         }
     }
 
@@ -449,12 +449,12 @@ void tx_filter_and_upconvert_coh(COMP tx_fdm[], int Nc, const COMP tx_symbols[],
     COMP  two = {2.0, 0.0};
     float mag;
 
-    gain.real = sqrtf(2.0)/2.0;
-    gain.imag = 0.0;
+    gain.real = sqrtf(2.0)/2.0f;
+    gain.imag = 0.0f;
 
     for(i=0; i<COHPSK_M; i++) {
-	tx_fdm[i].real = 0.0;
-	tx_fdm[i].imag = 0.0;
+	tx_fdm[i].real = 0.0f;
+	tx_fdm[i].imag = 0.0f;
     }
 
     for(c=0; c<Nc; c++)
@@ -472,14 +472,14 @@ void tx_filter_and_upconvert_coh(COMP tx_fdm[], int Nc, const COMP tx_symbols[],
 
 	    /* filter real sample of symbol for carrier c */
 
-	    acc = 0.0;
+	    acc = 0.0f;
 	    for(j=0,k=COHPSK_M-i-1; j<COHPSK_NSYM; j++,k+=COHPSK_M)
 		acc += COHPSK_M * tx_filter_memory[c][j].real * gt_alpha5_root_coh[k];
 	    tx_baseband.real = acc;
 
 	    /* filter imag sample of symbol for carrier c */
 
-	    acc = 0.0;
+	    acc = 0.0f;
 	    for(j=0,k=COHPSK_M-i-1; j<COHPSK_NSYM; j++,k+=COHPSK_M)
 		acc += COHPSK_M * tx_filter_memory[c][j].imag * gt_alpha5_root_coh[k];
 	    tx_baseband.imag = acc;
@@ -530,8 +530,8 @@ void tx_filter_and_upconvert_coh(COMP tx_fdm[], int Nc, const COMP tx_symbols[],
 	    tx_filter_memory[c][i] = tx_filter_memory[c][i+1];
 
     for(c=0; c<Nc; c++) {
-	tx_filter_memory[c][COHPSK_NSYM-1].real = 0.0;
-	tx_filter_memory[c][COHPSK_NSYM-1].imag = 0.0;
+	tx_filter_memory[c][COHPSK_NSYM-1].real = 0.0f;
+	tx_filter_memory[c][COHPSK_NSYM-1].imag = 0.0f;
     }
 }
 
@@ -550,7 +550,7 @@ void corr_with_pilots(float *corr_out, float *mag_out, struct COHPSK *coh, int t
         f_fine_rect[p].imag = sinf(result);
     }
 
-    corr = 0.0; mag = 1E-12;
+    corr = 0.0f; mag = 1E-12;
     for (c=0; c<COHPSK_NC*COHPSK_ND; c++) {
         acorr.real = 0.0f; acorr.imag = 0.0f; pc = c % COHPSK_NC;
         for (p=0; p<NPILOTSFRAME+2; p++) {
@@ -592,7 +592,7 @@ void frame_sync_fine_freq_est(struct COHPSK *coh, COMP ch_symb[][COHPSK_NC*COHPS
 
         /* sample correlation over 2D grid of time and fine freq points */
 
-        max_corr = 0.0; max_mag = 1E-12;
+        max_corr = 0.0f; max_mag = 1E-12;
         for (f_fine=-20; f_fine<=20; f_fine+=0.25) {
             for (t=0; t<NSYMROWPILOT; t++) {
                 corr_with_pilots(&corr, &mag, coh, t, f_fine);
@@ -832,8 +832,8 @@ inline extern void rx_filter_coh(COMP rx_filt[COHPSK_NC*COHPSK_ND][P+1], int Nc,
 
     	for(c=0; c<Nc; c++)
         {
-            rx_filt[c][j].real = 0.0; 
-            rx_filt[c][j].imag = 0.0;
+            rx_filt[c][j].real = 0.0f;
+            rx_filt[c][j].imag = 0.0f;
         
             /*
                 This call is equivalent to the code below:
@@ -1001,7 +1001,7 @@ void rate_Fs_rx_processing(struct COHPSK *coh, COMP ch_symb[][COHPSK_NC*COHPSK_N
 
             /* combine difference on phase from last symbol over Nc carriers */
 
-            mod_strip.real = 0.0; mod_strip.imag = 0.0;
+            mod_strip.real = 0.0f; mod_strip.imag = 0.0f;
             for(c=0; c<fdmdv->Nc+1; c++) {
                 //printf("rx_onesym[%d] %f %f prev_rx_symbols[%d] %f %f\n", c, rx_onesym[c].real, rx_onesym[c].imag,
                 //       fdmdv->prev_rx_symbols[c].real, fdmdv->prev_rx_symbols[c].imag);
@@ -1110,9 +1110,9 @@ void cohpsk_demod(struct COHPSK *coh, float rx_bits[], int *sync_good, COMP rx_f
 
         /* we can test +/- 20Hz, so we break this up into 3 tests to cover +/- 60Hz */
 
-        max_ratio = 0.0;
-        f_est = 0.0;
-        for (coh->f_est = FDMDV_FCENTRE-40.0; coh->f_est <= FDMDV_FCENTRE+40.0; coh->f_est += 40.0) {
+        max_ratio = 0.0f;
+        f_est = 0.0f;
+        for (coh->f_est = FDMDV_FCENTRE-40.0f; coh->f_est <= FDMDV_FCENTRE+40.0f; coh->f_est += 40.0) {
 
             if (coh->verbose)
                 fprintf(stderr, "  [%d] acohpsk.f_est: %f +/- 20\n", coh->frame, (double)coh->f_est);
@@ -1235,7 +1235,7 @@ void cohpsk_demod(struct COHPSK *coh, float rx_bits[], int *sync_good, COMP rx_f
 int cohpsk_fs_offset(COMP out[], COMP in[], int n, float sample_rate_ppm)
 {
     double f;
-    double tin = 0.0;
+    double tin = 0.0f;
     double step = 1.0 + sample_rate_ppm/1E6;
     int t1, t2;
     int tout = 0;

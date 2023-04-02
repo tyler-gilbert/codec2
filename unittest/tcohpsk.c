@@ -123,15 +123,15 @@ int main(int argc, char *argv[])
     /* init stuff */
 
     log_r = log_data_r = noise_r = log_bits = ff_log_r = f_est_samples = 0;
-    phase_ch.real = 1.0; phase_ch.imag = 0.0;
+    phase_ch.real = 1.0f; phase_ch.imag = 0.0f;
     foff = FOFF;
 
     /*  each carrier has power = 2, total power 2Nc, total symbol rate
         NcRs, noise BW B=Fs Es/No = (C/Rs)/(N/B), N = var =
         2NcFs/NcRs(Es/No) = 2Fs/Rs(Es/No) */
 
-    EsNo = pow(10.0, ESNODB/10.0);
-    variance = 2.0*COHPSK_FS/(COHPSK_RS*EsNo);
+    EsNo = powf(10.0, ESNODB/10.0);
+    variance = 2.0f*COHPSK_FS/(COHPSK_RS*EsNo);
     //fprintf(stderr, "doff: %e\n", DFOFF);
 
     /* Main Loop ---------------------------------------------------------------------*/
@@ -158,7 +158,7 @@ int main(int argc, char *argv[])
 	\*---------------------------------------------------------*/
 
         for(r=0; r<NSYMROWPILOT*COHPSK_M; r++) {
-            foff_rect.real = cos(2.0*M_PI*foff/COHPSK_FS); foff_rect.imag = sin(2.0*M_PI*foff/COHPSK_FS);
+            foff_rect.real = cosf(2.0f*M_PI*foff/COHPSK_FS); foff_rect.imag = sin(2.0f*M_PI*foff/COHPSK_FS);
             foff += DFOFF;
             phase_ch = cmult(phase_ch, foff_rect);
             ch_fdm_frame[r] = cmult(tx_fdm_frame[r], phase_ch);
@@ -167,7 +167,7 @@ int main(int argc, char *argv[])
         phase_ch.imag /= cabsolute(phase_ch);
         //fprintf(stderr, "%f\n", foff);
         for(r=0; r<NSYMROWPILOT*COHPSK_M; r++,noise_r++) {
-            scaled_noise = fcmult(sqrt(variance), noise[noise_r]);
+            scaled_noise = fcmult(sqrtf(variance), noise[noise_r]);
             ch_fdm_frame[r] = cadd(ch_fdm_frame[r], scaled_noise);
         }
 
@@ -211,7 +211,7 @@ int main(int argc, char *argv[])
         tmp = nin_frame;
         cohpsk_demod(coh, rx_bits_sd, &reliable_sync_bit, &ch_fdm_frame_log_out[ch_fdm_frame_log_index], &nin_frame);
         for(i=0; i<COHPSK_BITS_PER_FRAME; i++)
-            rx_bits[i] = rx_bits_sd[i] < 0.0;
+            rx_bits[i] = rx_bits_sd[i] < 0.0f;
 
         ch_fdm_frame_log_index += tmp;
 

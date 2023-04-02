@@ -78,10 +78,10 @@ struct FM *fm_create(int nsam)
     fm->rx_bb = (COMP*)malloc(sizeof(COMP)*(FILT_MEM+nsam));
     assert(fm->rx_bb != NULL);
 
-    fm->rx_bb_filt_prev.real = 0.0;
-    fm->rx_bb_filt_prev.imag = 0.0;
-    fm->lo_phase.real = 1.0;
-    fm->lo_phase.imag = 0.0;
+    fm->rx_bb_filt_prev.real = 0.0f;
+    fm->rx_bb_filt_prev.imag = 0.0f;
+    fm->lo_phase.real = 1.0f;
+    fm->lo_phase.imag = 0.0f;
 
     fm->tx_phase = 0;
 
@@ -140,7 +140,7 @@ void fm_demod(struct FM *fm_states, float rx_out[], float rx[])
 
       /* input FIR filter */
 
-      rx_bb_filt.real = 0.0; rx_bb_filt.imag = 0.0;
+      rx_bb_filt.real = 0.0f; rx_bb_filt.imag = 0.0f;
 
       for(k=0; k<FILT_MEM/2; k++) {
           rx_bb_filt.real += rx_bb[i-k].real * bin[k+FILT_MEM/4];

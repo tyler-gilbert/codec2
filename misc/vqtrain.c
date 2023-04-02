@@ -179,7 +179,7 @@ int main(int argc, char *argv[]) {
     /* Lets measure 0 bit VQ (i.e. mean of training set) as starting point */   
     norm(cent, k, J);
     memcpy(cb, cent, k*sizeof(float));
-    se = 0.0;
+    se = 0.0f;
     rewind(ftrain);
     for(i=0; i<J; i++) {
         ret = fread(vec, sizeof(float), k, ftrain);
@@ -187,7 +187,7 @@ int main(int argc, char *argv[]) {
         quantise(cb, vec, k, 1, st, en, &e, &se);
     }
     var = se/(J*(en-st+1));
-    printf("\r  It: 0, var: %f sd: %f\n", var, sqrt(var));
+    printf("\r  It: 0, var: %f sd: %f\n", var, sqrtf(var));
 
     /* set up initial codebook state from samples of training set */
     if (init_rand) srand(time(NULL));
@@ -213,7 +213,7 @@ int main(int argc, char *argv[]) {
 	}
 
 	/* quantise training set */
-	se = 0.0; noutliers[0] = noutliers[1] = noutliers[2] = 0;
+	se = 0.0f; noutliers[0] = noutliers[1] = noutliers[2] = 0;
 	rewind(ftrain);
 	for(i=0; i<J; i++) {
 	    ret = fread(vec, sizeof(float), k, ftrain);
@@ -221,9 +221,9 @@ int main(int argc, char *argv[]) {
 	    ind = quantise(cb, vec, k, m, st, en, &e, &se);
 	    n[ind]++;
 	    acc(&cent[ind*k], vec, k);
-            if (sqrt(e/(en-st+1)) > 1.0) noutliers[0]++;
-            if (sqrt(e/(en-st+1)) > 2.0) noutliers[1]++;
-            if (sqrt(e/(en-st+1)) > 3.0) noutliers[2]++;
+            if (sqrtf(e/(en-st+1)) > 1.0) noutliers[0]++;
+            if (sqrtf(e/(en-st+1)) > 2.0) noutliers[1]++;
+            if (sqrtf(e/(en-st+1)) > 3.0) noutliers[2]++;
 	}
 	var = se/(J*(en-st+1));
 	delta = (var_1-var)/var;
@@ -233,7 +233,7 @@ int main(int argc, char *argv[]) {
             if (n[i] < n_min) n_min = n[i];
             if (n[i] > n_max) n_max = n[i];
         }
-	printf("\r  It: %2ld, var: %5f sd: %f outliers > 1/2/3 dB = %3.2f/%3.2f/%3.2f Delta = %5.4f %d %d\n", j, var, sqrt(var),
+	printf("\r  It: %2ld, var: %5f sd: %f outliers > 1/2/3 dB = %3.2f/%3.2f/%3.2f Delta = %5.4f %d %d\n", j, var, sqrtf(var),
                (float)noutliers[0]/J, (float)noutliers[1]/J, (float)noutliers[2]/J, delta, n_min, n_max);
 	j++;
 
@@ -304,7 +304,7 @@ void zero(float v[], int k)
     int	i;
 
     for(i=0; i<k; i++)
-	v[i] = 0.0;
+	v[i] = 0.0f;
 }
 
 /*---------------------------------------------------------------------------*\
@@ -381,7 +381,7 @@ long quantise(float  cb[],   // current VQ codebook
    besti = 0;
    *beste = 1E32;
    for(j=0; j<m; j++) {
-	e = 0.0;
+	e = 0.0f;
 	for(i=st; i<=en; i++) {
 	    diff = cb[j*k+i]-vec[i];
 	    e += diff*diff;

@@ -130,7 +130,7 @@ struct FSK * fsk_create_core(int Fs, int Rs, int M, int P, int Nsym, int f1_tx, 
     // Need enough bins to within 10% of tone centre
     float bin_width_Hz = 0.1*Rs;
     float Ndft = (float)Fs/bin_width_Hz;
-    Ndft = pow(2.0, ceil(log2(Ndft)));
+    Ndft = powf(2.0, ceil(log2(Ndft)));
     
     /* Set constant config parameters */
     fsk->Fs = Fs;
@@ -141,7 +141,7 @@ struct FSK * fsk_create_core(int Fs, int Rs, int M, int P, int Nsym, int f1_tx, 
     fsk->Nsym = Nsym;
     fsk->N = fsk->Ts*fsk->Nsym;
     fsk->Ndft = Ndft;
-    fsk->tc = 0.1;
+    fsk->tc = 0.1f;
     fsk->Nmem = fsk->N+(2*fsk->Ts);
     fsk->f1_tx = f1_tx;
     fsk->tone_spacing = tone_spacing;
@@ -487,7 +487,7 @@ void fsk_demod_freq_est(struct FSK *fsk, COMP fsk_in[], float *freqs, int M) {
             #ifdef USE_HANN_TABLE
             hann = fsk->hann_table[i];
             #else
-            hann = 0.5 - 0.5 * cosf(2.0 * M_PI * (float)i / (float) (fft_samps-1));
+            //hann = 0.5 - 0.5 * cosf(2.0 * M_PI * (float)i / (float) (fft_samps-1));
             #endif
             fftin[i].r = hann*fsk_in[i+a].real;
             fftin[i].i = hann*fsk_in[i+a].imag;
@@ -566,12 +566,12 @@ void fsk_demod_freq_est(struct FSK *fsk, COMP fsk_in[], float *freqs, int M) {
 
     /* construct mask */
     float mask[Ndft];
-    for(i=0; i<Ndft; i++) mask[i] = 0.0;
-    for(i=0;i<3; i++) mask[i] = 1.0;
+    for(i=0; i<Ndft; i++) mask[i] = 0.0f;
+    for(i=0;i<3; i++) mask[i] = 1.0f;
     int bin=0;
     for(int m=1; m<=M-1; m++) {
         bin = round((float)m*fsk->tone_spacing*Ndft/Fs)-1;
-        for(i=bin; i<=bin+2; i++) mask[i] = 1.0;
+        for(i=bin; i<=bin+2; i++) mask[i] = 1.0f;
     }
     int len_mask = bin+2+1;
 
@@ -580,10 +580,10 @@ void fsk_demod_freq_est(struct FSK *fsk, COMP fsk_in[], float *freqs, int M) {
     #endif
 
     /* drag mask over Sf, looking for peak in correlation */
-    int b_max = st; float corr_max = 0.0;
+    int b_max = st; float corr_max = 0.0f;
     float *Sf = fsk->Sf;
     for (int b=st; b<en-len_mask; b++) {
-        float corr = 0.0;
+        float corr = 0.0f;
         for(i=0; i<len_mask; i++)
             corr += mask[i] * Sf[b+i];
         if (corr > corr_max) {
@@ -760,7 +760,7 @@ void fsk_demod_core(struct FSK *fsk, uint8_t rx_bits[], float rx_filt[], COMP fs
     stdebno = 0;
     #endif
 
-    float rx_nse_pow = 1E-12; float rx_sig_pow = 0.0;
+    float rx_nse_pow = 1E-12; float rx_sig_pow = 0.0f;
     for(i=0; i<nsym; i++) {
 
         /* resample at ideal sampling instant */
@@ -799,7 +799,7 @@ void fsk_demod_core(struct FSK *fsk, uint8_t rx_bits[], float rx_filt[], COMP fs
         /* Optionally output filter magnitudes for soft decision/LLR
            calculation.  Update SNRest always as this is a useful
            alternative to the earlier EbNo estimator below */
-        float sum = 0.0;
+        float sum = 0.0f;
         for(m=0; m<M; m++) {
             if (rx_filt != NULL) rx_filt[m*nsym+i] = sqrtf(tmax[m]);
             sum += tmax[m];
@@ -821,7 +821,7 @@ void fsk_demod_core(struct FSK *fsk, uint8_t rx_bits[], float rx_filt[], COMP fs
 
     fsk->rx_sig_pow = rx_sig_pow = rx_sig_pow/nsym;
     fsk->rx_nse_pow = rx_nse_pow = rx_nse_pow/nsym;
-    fsk->v_est = sqrt(rx_sig_pow-rx_nse_pow);
+    fsk->v_est = sqrtf(rx_sig_pow-rx_nse_pow);
     fsk->SNRest = rx_sig_pow/rx_nse_pow;
     
     #ifdef EST_EBNO    
@@ -832,9 +832,9 @@ void fsk_demod_core(struct FSK *fsk, uint8_t rx_bits[], float rx_filt[], COMP fs
     stdebno = (stdebno/(float)nsym) - (meanebno*meanebno);
     /* trap any negative numbers to avoid NANs flowing through */
     if (stdebno > 0.0) {
-        stdebno = sqrt(stdebno);
+        stdebno = sqrtf(stdebno);
     } else {
-        stdebno = 0.0;
+        stdebno = 0.0f;
     }
         
     fsk->EbNodB = -6+(20*log10f((1e-6+meanebno)/(1e-6+stdebno)));
@@ -855,7 +855,7 @@ void fsk_demod_core(struct FSK *fsk, uint8_t rx_bits[], float rx_filt[], COMP fs
     fsk->stats->rx_timing = (float)rx_timing;
         
     /* Estimate and save frequency offset */
-    fc_avg = fc_tx = 0.0;
+    fc_avg = fc_tx = 0.0f;
     for(int m=0; m<M; m++) {
         fc_avg += f_est[m]/M;
         fc_tx  += (fsk->f1_tx + m*fsk->tone_spacing)/M;

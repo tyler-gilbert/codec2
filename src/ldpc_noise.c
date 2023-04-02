@@ -40,22 +40,22 @@ int main(int argc, char *argv[]) {
     }
 
     double NodB = atof(argv[3]);
-    double No = pow(10.0, NodB/10.0);
-    double sum_xx = 0; double sum_x = 0.0; long n = 0;
+    double No = powf(10.0, NodB/10.0);
+    double sum_xx = 0; double sum_x = 0.0f; long n = 0;
     
     fprintf(stderr, "Uncoded PSK Eb/No simulation:\n");
     fprintf(stderr, "No    = % 4.2f dB (%4.2f linear)\n", NodB, No);
     fprintf(stderr, "Eb    = % 4.2f dB (%4.2f linear)\n", 0.0, 1.0);
-    fprintf(stderr, "Eb/No = %4.2f dB (%4.2f linear)\n", -NodB, pow(10,-NodB/10.0));
+    fprintf(stderr, "Eb/No = %4.2f dB (%4.2f linear)\n", -NodB, powf(10,-NodB/10.0));
     
     while (fread(&datain, sizeof(float), 1, fin) == 1) {
 
 	// Gaussian from uniform:
 	double x = (double)rand() / RAND_MAX;
         double y = (double)rand() / RAND_MAX;
-        double z = sqrt(-2 * log(x)) * cos(2 * M_PI * y);
+        double z = sqrtf(-2 * logf(x)) * cosf(2 * M_PI * y);
 
-	double noise = sqrt(No/2) * z;
+	double noise = sqrtf(No/2) * z;
 	dataout = datain + noise;
 
         fwrite(&dataout, sizeof(float), 1, fout);        

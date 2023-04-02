@@ -33,6 +33,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "debug_alloc.h"
+
 #include "mbest.h"
 
 struct MBEST *mbest_create(int entries) {
@@ -40,11 +42,11 @@ struct MBEST *mbest_create(int entries) {
     struct MBEST *mbest;
 
     assert(entries > 0);
-    mbest = (struct MBEST *)malloc(sizeof(struct MBEST));
+    mbest = (struct MBEST *)MALLOC(sizeof(struct MBEST));
     assert(mbest != NULL);
 
     mbest->entries = entries;
-    mbest->list = (struct MBEST_LIST *)malloc(entries*sizeof(struct MBEST_LIST));
+    mbest->list = (struct MBEST_LIST *)MALLOC(entries*sizeof(struct MBEST_LIST));
     assert(mbest->list != NULL);
 
     for(i=0; i<mbest->entries; i++) {
@@ -59,8 +61,8 @@ struct MBEST *mbest_create(int entries) {
 
 void mbest_destroy(struct MBEST *mbest) {
     assert(mbest != NULL);
-    free(mbest->list);
-    free(mbest);
+    FREE(mbest->list);
+    FREE(mbest);
 }
 
 
@@ -133,27 +135,27 @@ void mbest_search(
 
     /* note weighting can be applied externally by modifiying cb[] and vec:
 
-      float e = 0.0;
+      float e = 0.0f;
       for(i=0; i<k; i++)
-        e += pow(w[i]*(cb[j*k+i] - vec[i]),2.0)
+        e += powf(w[i]*(cb[j*k+i] - vec[i]),2.0)
            
        |
       \|/
 
       for(i=0; i<k; i++)
-         e += pow(w[i]*cb[j*k+i] - w[i]*vec[i]),2.0)
+         e += powf(w[i]*cb[j*k+i] - w[i]*vec[i]),2.0)
 
        |
       \|/
 
       for(i=0; i<k; i++)
-         e += pow(cb1[j*k+i] - vec1[i]),2.0)
+         e += powf(cb1[j*k+i] - vec1[i]),2.0)
 
       where cb1[j*k+i] = w[i]*cb[j*k+i], and vec1[i] = w[i]*vec[i]
     */
 
     for(j=0; j<m; j++) {
-        float e = 0.0;
+        float e = 0.0f;
         for(int i=0; i<k; i++) {
 	    float diff = *cb++ - vec[i];
             e += diff*diff;
@@ -182,7 +184,7 @@ void mbest_search450(const float  *cb, float vec[], float w[], int k,int shorter
     float   diff;
 
     for(j=0; j<m; j++) {
-	e = 0.0;
+	e = 0.0f;
 	for(i=0; i<k; i++) {
             //Only search first NEWAMP2_K Vectors
             if(i<shorterK){

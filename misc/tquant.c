@@ -44,7 +44,7 @@ int main() {
     quantise_init();
     test_Wo_quant();
     test_lsp_quant();
-    test_energy_quant(E_LEVELS, 0.5*(E_MAX_DB - E_MIN_DB)/E_LEVELS);
+    test_energy_quant(E_LEVELS, 0.5f*(E_MAX_DB - E_MIN_DB)/E_LEVELS);
 
     return 0;
 }
@@ -77,7 +77,7 @@ int test_energy_quant(int levels, float max_error_dB) {
 	index_out = encode_energy(e, E_BITS);
 	if (index_in != index_out) {
 	    printf("edB: %f index_in: %d index_out: %d\n",
-		   10.0*log10(e), index_in, index_out);
+		   10.0f*log10f(e), index_in, index_out);
 	    exit(0);
 	}
     }
@@ -91,7 +91,7 @@ int test_energy_quant(int levels, float max_error_dB) {
     for(e=low_e; e<high_e; e +=(high_e-low_e)/1000.0) {
 	index = encode_energy(e, E_BITS);
 	e_dec = decode_energy(index, E_BITS);
-	error = 10.0*log10(e) - 10.0*log10(e_dec);
+	error = 10.0f*log10f(e) - 10.0f*log10f(e_dec);
 	fprintf(fe, "%f\n", error);
 	if (fabs(error) > max_error_dB) {
 	    printf("error: %f %f\n", error, max_error_dB);

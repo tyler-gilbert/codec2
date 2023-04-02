@@ -10,7 +10,7 @@
 
  The first column is the log2 of the pitch compared to the lowest freq,
  so log2(wo/pi*4000/50) where wo is the frequency your patch outputs. The
- second column is the energy in dB, so 10*log10(1e-4+E)
+ second column is the energy in dB, so 10*log10f(1e-4+E)
 */
 
 /*
@@ -165,7 +165,7 @@ void update_weighted(float *data, float *weight, int nb_vectors, float *codebook
     int n = nearest[i];
     for (j=0;j<ndim;j++)
     {
-      float w = sqrt(weight[i*ndim+j]);
+      float w = sqrtf(weight[i*ndim+j]);
       count[n][j]+=w;
       codebook[n*ndim+j] += w*data[i*ndim+j];
     }
@@ -292,8 +292,8 @@ int main(int argc, char **argv)
     }
     //printf("\n");
   }
-  fprintf(stderr, "GE RMS error: %f %f\n", sqrt(err[0]/nb_vectors), sqrt(err[1]/nb_vectors));
-  fprintf(stderr, "Weighted GE error: %f %f\n", sqrt(werr[0]/wsum[0]), sqrt(werr[1]/wsum[1]));
+  fprintf(stderr, "GE RMS error: %f %f\n", sqrtf(err[0]/nb_vectors), sqrtf(err[1]/nb_vectors));
+  fprintf(stderr, "Weighted GE error: %f %f\n", sqrtf(werr[0]/wsum[0]), sqrtf(werr[1]/wsum[1]));
 
   free(codebook);
   free(codebook2);

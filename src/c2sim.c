@@ -87,7 +87,7 @@ int main(int argc, char *argv[])
     int   scalar_quant_Wo_e_low = 0;
     int   vector_quant_Wo_e = 0;
     int   dump_pitch_e = 0;
-    float gain = 1.0;
+    float gain = 1.0f;
     int   bpf_en = 0;
     int   bpfb_en = 0;
     FILE *fam = NULL, *fWo = NULL;
@@ -466,14 +466,14 @@ int main(int argc, char *argv[])
     float snr;
     float sum_snr;
 
-    float pre_mem = 0.0, de_mem = 0.0;
+    float pre_mem = 0.0, de_mem = 0.0f;
     float ak[1+order];
     // COMP  Sw_[FFT_ENC];
     // COMP  Ew[FFT_ENC];
 
     float ex_phase[MAX_AMP+1];
 
-    float bg_est = 0.0;
+    float bg_est = 0.0f;
 
 
     MODEL prev_model;
@@ -498,11 +498,11 @@ int main(int argc, char *argv[])
     COMP Aw[FFT_ENC];
     COMP H[MAX_AMP];
 
-    float sd_sum = 0.0; int sd_frames = 0;
+    float sd_sum = 0.0f; int sd_frames = 0;
     
     for(i=0; i<m_pitch; i++) {
-	Sn[i] = 1.0;
-	Sn_pre[i] = 1.0;
+	Sn[i] = 1.0f;
+	Sn_pre[i] = 1.0f;
     }
     for(i=0; i<2*N_SAMP; i++)
 	Sn_[i] = 0;
@@ -512,20 +512,20 @@ int main(int argc, char *argv[])
     prev_model.Wo = c2const.Wo_max;
     prev_model.L = floor(PI/prev_model.Wo);
     for(i=1; i<=prev_model.L; i++) {
-	prev_model.A[i] = 0.0;
-	prev_model.phi[i] = 0.0;
+	prev_model.A[i] = 0.0f;
+	prev_model.phi[i] = 0.0f;
     }
     for(i=1; i<=MAX_AMP; i++) {
 	//ex_phase[i] = (PI/3)*(float)rand()/RAND_MAX;
-	ex_phase[i] = 0.0;
+	ex_phase[i] = 0.0f;
     }
     e = prev_e = 1;
-    hpf_states[0] = hpf_states[1] = 0.0;
+    hpf_states[0] = hpf_states[1] = 0.0f;
 
     nlp_states = nlp_create(&c2const);
 
     ex_phase[0] = 0;
-    Woe_[0] = Woe_[1] = 1.0;
+    Woe_[0] = Woe_[1] = 1.0f;
 
     /* Initialise ------------------------------------------------------------*/
 
@@ -542,7 +542,7 @@ int main(int argc, char *argv[])
         bpf_en = 1;
     if (bpf_en) {
         for(i=0; i<BPF_N; i++)
-            bpf_buf[i] = 0.0;
+            bpf_buf[i] = 0.0f;
     }
 
     for(i=0; i<LPC_ORD; i++) {
@@ -550,14 +550,14 @@ int main(int argc, char *argv[])
     }
     prev_e_dec = 1;
     for(m=1; m<=MAX_AMP; m++)
-	prev_model_dec.A[m] = 0.0;
+	prev_model_dec.A[m] = 0.0f;
     prev_model_dec.Wo = c2const.Wo_min;
     prev_model_dec.L = PI/prev_model_dec.Wo;
     prev_model_dec.voiced = 0;
 
     /* mel resampling experiments */
 
-    float rate_K_sample_freqs_kHz[K]; float se = 0.0; int nse = 0;
+    float rate_K_sample_freqs_kHz[K]; float se = 0.0f; int nse = 0;
     if (rateK) {
 	mel_sample_freqs_kHz(rate_K_sample_freqs_kHz, NEWAMP1_K, ftomel(200.0), ftomel(3700.0) );
     }
@@ -570,7 +570,7 @@ int main(int argc, char *argv[])
             rate_K_vec_delay_[d][k] = 0;
         }
         for(m=1; m<=MAX_AMP; m++)
-            rate_K_model_delay[d].A[m] = 0.0;
+            rate_K_model_delay[d].A[m] = 0.0f;
         rate_K_model_delay[d].Wo = c2const.Wo_min;
         rate_K_model_delay[d].L = M_PI/prev_model_dec.Wo;
         rate_K_model_delay[d].voiced = 0;
@@ -658,9 +658,9 @@ int main(int argc, char *argv[])
 	if (hi) {
 	    int m;
 	    for(m=1; m<model.L/2; m++)
-		model.A[m] = 0.0;
+		model.A[m] = 0.0f;
 	    for(m=3*model.L/4; m<=model.L; m++)
-		model.A[m] = 0.0;
+		model.A[m] = 0.0f;
 	}
 
 	/*------------------------------------------------------------*\
@@ -802,7 +802,7 @@ int main(int argc, char *argv[])
         }
 
 	/* LPCNet type mel spaced band ML data */
-	float bands_mean = 0.0;
+	float bands_mean = 0.0f;
 	if (fbands) {
 	    float bandE[LPCNET_FREQ_MAX_BANDS];
             float freqkHz[LPCNET_FREQ_MAX_BANDS];
@@ -835,7 +835,7 @@ int main(int argc, char *argv[])
 	    if (frateKin != NULL) {
 		assert(fread(rate_K_vec, sizeof(float), K, frateKin) == K);
 		/* apply newamp1 postfilter - this helped male samples with VQVAE work */
-                float sum = 0.0;
+                float sum = 0.0f;
                 for(int k=0; k<K; k++)
                     sum += rate_K_vec[k];
                 float mean = sum/K;
@@ -850,7 +850,7 @@ int main(int argc, char *argv[])
             float rate_K_vec_[K];
             if (newamp1vq) {
                 /* remove mean */
-                float sum = 0.0;
+                float sum = 0.0f;
                 for(int k=0; k<K; k++)
                     sum += rate_K_vec[k];
                 float mean = sum/K;
@@ -868,7 +868,7 @@ int main(int argc, char *argv[])
 
                 /* running sum of squared error for variance calculation */
                 for(int k=0; k<K; k++)
-                    se += pow(rate_K_vec_no_mean[k]-rate_K_vec_no_mean_[k],2.0);
+                    se += powf(rate_K_vec_no_mean[k]-rate_K_vec_no_mean_[k],2.0);
                 nse += K;
             }
             else {
@@ -883,7 +883,7 @@ int main(int argc, char *argv[])
 		for(int i=0; i<18; i++)
 		    features[i] = (rate_K_vec_[i]-30)/40;
 		// keep in range of 40 ... 255 for pitch embedding
-		int pitch_index = 21 + 2.0*M_PI/model.Wo;
+		int pitch_index = 21 + 2.0f*M_PI/model.Wo;
 		features[36] = 0.02*(pitch_index-100);
 		//features[36] = (model.Wo - c2const.Wo_min)/(c2const.Wo_max - c2const.Wo_min) - 0.5;
 		features[37] = model.voiced;
@@ -926,7 +926,7 @@ int main(int argc, char *argv[])
                         float *B = &rate_K_vec_delay[rate_K_dec][0];
                         for(int d=0; d<=rate_K_dec; d++) {
                             float *T = &rate_K_vec_delay[d][0];
-                            float num = 0.0, den = 0.0;
+                            float num = 0.0, den = 0.0f;
                             for(int k=0; k<K; k++) {
                                 num += (B[k]-T[k])*(A[k]-B[k]);
                                 den += (A[k]-B[k])*(A[k]-B[k]);
@@ -938,7 +938,7 @@ int main(int argc, char *argv[])
                     }
                     else {
                         // use linear interpolation
-                        float c=0.0, inc = 1.0/rate_K_dec;
+                        float c=0.0, inc = 1.0f/rate_K_dec;
                         for(int d=0; d<=rate_K_dec; d++) {
                             for(int k=0; k<K; k++)
                                 rate_K_vec_delay_[d][k] = (1.0-c)*rate_K_vec_delay[0][k] + c*rate_K_vec_delay[rate_K_dec][k];
@@ -989,7 +989,7 @@ int main(int argc, char *argv[])
 
             /* interpolate the model parameters */
 
-            weight_inc = 1.0/decimate;
+            weight_inc = 1.0f/decimate;
             for(i=0, weight=weight_inc; i<decimate-1; i++, weight += weight_inc) {
                 //model_dec[i].voiced = model_dec[decimate-1].voiced;
                 interpolate_lsp_ver2(&lsps_dec[i][0], prev_lsps_dec, &lsps_dec[decimate-1][0], weight, order);

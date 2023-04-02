@@ -16,8 +16,8 @@
 
 int main(int argc, char *argv[]) {
     short buf[FS] = {0};
-    float f0 = 60.0;
-    float n0 = 0.0;
+    float f0 = 60.0f;
+    float n0 = 0.0f;
     int   Nsecs = 1;
     int   randf0 = 0;
     int   filter = 0;
@@ -74,17 +74,17 @@ int main(int argc, char *argv[]) {
     }
 
     int t = 0;
-    float A = 100.0;
+    float A = 100.0f;
     
     /* optionally filter with 2nd order system */
     float alpha = 0.25*M_PI, gamma=0.99;
-    float a[2] = {-2.0*gamma*cos(alpha), gamma*gamma};
+    float a[2] = {-2.0f*gamma*cosf(alpha), gamma*gamma};
     float mem[2] = {0};
     
     for (int j=0; j<Nsecs; j++) {
 	if (rande) {
-	    float AdB_min = 20.0*log10(100.0);
-	    float AdB_step = 6.0;
+	    float AdB_min = 20.0f*log10f(100.0);
+	    float AdB_step = 6.0f;
 	    float num_values = rande;
 
 	    // discrete RV between 0..1
@@ -92,7 +92,7 @@ int main(int argc, char *argv[]) {
 	    r = floor(r*num_values);
 	    
 	    float AdB = AdB_min + r*AdB_step;
-	    A = pow(10.0,AdB/20.0);
+	    A = powf(10.0,AdB/20.0);
 	    fprintf(stderr, "r: %f AdB: %f A: %f\n", r, AdB, A);
 	}
 	if (randf0) {
@@ -100,18 +100,18 @@ int main(int argc, char *argv[]) {
 	    f0 = (float)FS/pitch_period;
 	    //fprintf(stderr, "P: %f f0: %f\n", pitch_period, f0);
 	}
-	float Wo = 2.0*M_PI*f0/FS;
+	float Wo = 2.0f*M_PI*f0/FS;
 	int L = M_PI/Wo;
-	float e = 0.0;
+	float e = 0.0f;
 	for(int i=0; i<FS; i++) {
 	    buf[i] = 0;
-	    // 1/sqrt(L) term makes power constant across Wo
+	    // 1/sqrtf(L) term makes power constant across Wo
 	    for(int m=1; m<L; m++)
-		buf[i] += (A/sqrt(L))*cos(m*Wo*(t + n0));
-	    e += pow(buf[i], 2.0);
+		buf[i] += (A/sqrtf(L))*cosf(m*Wo*(t + n0));
+	    e += powf(buf[i], 2.0);
 	    t++;
 	}
-	//fprintf(stderr, "e (dB): %f\n", 10*log10(e));
+	//fprintf(stderr, "e (dB): %f\n", 10*log10f(e));
 	if (filter) {
 	    for(int i=0; i<FS; i++) {
 		float x = (float)buf[i];

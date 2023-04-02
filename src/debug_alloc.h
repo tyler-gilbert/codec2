@@ -17,7 +17,7 @@ extern char * __heap_end;
 register char * sp asm ("sp");
 #endif
 
-#if defined(__EMBEDDED__)
+#if defined(__EMBEDDED__) || 1
 extern void* codec2_malloc(size_t size);
 extern void* codec2_calloc(size_t nmemb, size_t size);
 extern void codec2_free(void* ptr);
@@ -54,7 +54,7 @@ extern void codec2_free(void* ptr);
     fprintf(stderr, "FREE: %s %p\n", func, ptr);
     }
 
-#ifdef DEBUG_ALLOC
+#if defined DEBUG_ALLOC && 0
   #define MALLOC(size) DEBUG_MALLOC(__func__, size)
   #define CALLOC(nmemb, size) DEBUG_CALLOC(__func__, nmemb, size)
   #define FREE(ptr) DEBUG_FREE(__func__, ptr)

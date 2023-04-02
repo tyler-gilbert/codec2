@@ -98,7 +98,7 @@ cheb_poly_eva(float *coef,float x,int order)
     /* Initialise pointers */
 
     t = T;                          	/* T[i-2] 			*/
-    *t++ = 1.0;
+    *t++ = 1.0f;
     u = t--;                        	/* T[i-1] 			*/
     *u++ = x;
     v = u--;                        	/* T[i] 			*/
@@ -108,7 +108,7 @@ cheb_poly_eva(float *coef,float x,int order)
     for(i=2;i<=order/2;i++)
 	*v++ = (2*x)*(*u++) - *t++;  	/* T[i] = 2*x*T[i-1] - T[i-2]	*/
 
-    sum=0.0;                        	/* initialise sum to zero 	*/
+    sum=0.0f;                        	/* initialise sum to zero 	*/
     t = T;                          	/* reset pointer 		*/
 
     /* Evaluate polynomial and return value also free memory space */
@@ -162,8 +162,8 @@ int lpc_to_lsp (float *a, int order, float *freq, int nb, float delta)
     qx = Q;
     p = px;
     q = qx;
-    *px++ = 1.0;
-    *qx++ = 1.0;
+    *px++ = 1.0f;
+    *qx++ = 1.0f;
     for(i=1;i<=m;i++){
 	*px++ = a[i]+a[order+1-i]-*p++;
 	*qx++ = a[i]-a[order+1-i]+*q++;
@@ -183,7 +183,7 @@ int lpc_to_lsp (float *a, int order, float *freq, int nb, float delta)
     Keep alternating between the two polynomials as each zero is found 	*/
 
     xr = 0;             	/* initialise xr to zero 		*/
-    xl = 1.0;               	/* start at point xl = 1 		*/
+    xl = 1.0f;               	/* start at point xl = 1 		*/
 
 
     for(j=0;j<order;j++){
@@ -271,7 +271,7 @@ void lsp_to_lpc(float *lsp, float *ak, int order)
     float freq[order];
     float Wp[(order * 4) + 2];
 
-    /* convert from radians to the x=cos(w) domain */
+    /* convert from radians to the x=cosf(w) domain */
 
     for(i=0; i<order; i++)
 	freq[i] = cosf(lsp[i]);
@@ -281,14 +281,14 @@ void lsp_to_lpc(float *lsp, float *ak, int order)
     /* initialise contents of array */
 
     for(i=0;i<=4*(order/2)+1;i++){       	/* set contents of buffer to 0 */
-	*pw++ = 0.0;
+	*pw++ = 0.0f;
     }
 
     /* Set pointers up */
 
     pw = Wp;
-    xin1 = 1.0;
-    xin2 = 1.0;
+    xin1 = 1.0f;
+    xin2 = 1.0f;
 
     /* reconstruct P(z) and Q(z) by cascading second order polynomials
       in form 1 - 2xz(-1) +z(-2), where x is the LSP coefficient */
@@ -314,8 +314,8 @@ void lsp_to_lpc(float *lsp, float *ak, int order)
 	*(n4+1) = xin1;
 	*(n4+2) = xin2;
 
-	xin1 = 0.0;
-	xin2 = 0.0;
+	xin1 = 0.0f;
+	xin2 = 0.0f;
     }
 }
 

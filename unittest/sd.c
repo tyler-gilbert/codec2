@@ -57,10 +57,10 @@ float spectral_dist(float ak1[], float ak2[], int p, int n)
     int i;
 
     for(i=0; i<n; i++) {
-	A1[i].real = 0.0;
-	A1[i].imag = 0.0;
-	A2[i].real = 0.0;
-	A2[i].imag = 0.0;
+	A1[i].real = 0.0f;
+	A1[i].imag = 0.0f;
+	A2[i].real = 0.0f;
+	A2[i].imag = 0.0f;
     }
 
     for(i=0; i<p+1; i++) {
@@ -72,13 +72,13 @@ float spectral_dist(float ak1[], float ak2[], int p, int n)
     four1(&A1[-1].imag,n,-1);
     four1(&A2[-1].imag,n,-1);
 
-    sd = 0.0;
+    sd = 0.0f;
     for(i=0; i<n; i++) {
 	P1 = A1[i].real*A1[i].real + A1[i].imag*A1[i].imag;
 	P2 = A2[i].real*A2[i].real + A2[i].imag*A2[i].imag;
-	sd += pow(log10(P2/P1),2.0);
+	sd += powf(log10f(P2/P1),2.0);
     }
-    sd = 10.0*sqrt(sd/n);	/* sd in dB */
+    sd = 10.0f*sqrtf(sd/n);	/* sd in dB */
 
     return(sd);
 }

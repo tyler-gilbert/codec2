@@ -232,7 +232,7 @@ void quisk_cfTune(struct quisk_cfFilter * filter, float freq) {
         filter->cpxCoefs = (complex float *)MALLOC(filter->nTaps * sizeof(complex float));
 
     tune = 2.0 * M_PI * freq;
-    D = (filter->nTaps - 1.0) / 2.0;
+    D = (filter->nTaps - 1.0) / 2.0f;
 
     for (i = 0; i < filter->nTaps; i++) {
         float tval = tune * (i - D);

@@ -193,7 +193,7 @@ int main(int argc, char *argv[]) {
     int f = 0;
     Nerrs = Terrs = Tbits = Terrs2 = Tbits2 = Terrs_coded = Tbits_coded = frame_count = 0;
 
-    float snr_est_smoothed_dB = 0.0;
+    float snr_est_smoothed_dB = 0.0f;
 
     float EsNo = 3.0f;  // Constant from ofdm_demod.c
 

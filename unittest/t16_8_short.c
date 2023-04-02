@@ -40,7 +40,7 @@ int main() {
     FILE *f8, *f8in;
 
     int i,f,t,t1;
-    float freq = 800.0;
+    float freq = 800.0f;
 
     f16 = fopen("out16_short.raw", "wb");
     assert(f16 != NULL);
@@ -60,11 +60,11 @@ int main() {
 
 #ifdef DC
 	for(i=0; i<N8; i++)
-	    in8k_short[FDMDV_OS_TAPS_8K+i] = 16000.0;
+	    in8k_short[FDMDV_OS_TAPS_8K+i] = 16000.0f;
 #endif
 #ifdef SINE
 	for(i=0; i<N8; i++,t++)
-	    in8k_short[FDMDV_OS_TAPS_8K+i] = 8000.0*cos(TWO_PI*t*freq/FS);
+	    in8k_short[FDMDV_OS_TAPS_8K+i] = 8000.0f*cosf(TWO_PI*t*freq/FS);
 #endif
 	fwrite(in8k_short, sizeof(short), N8, f8in);
 
@@ -76,7 +76,7 @@ int main() {
 	/* add a 6 kHz spurious signal for fun, we want down sampler to
 	   knock this out */
 	for(i=0; i<N16; i++,t1++)
-	    in16k_short[i+FDMDV_OS_TAPS_16K] = out16k_short[i] + 8000.0*cos(TWO_PI*t1*6000.0/FS);
+	    in16k_short[i+FDMDV_OS_TAPS_16K] = out16k_short[i] + 8000.0f*cosf(TWO_PI*t1*6000.0f/FS);
 
 	/* downsample */
 	fdmdv_16_to_8_short(out8k_short, &in16k_short[FDMDV_OS_TAPS_16K], N8);

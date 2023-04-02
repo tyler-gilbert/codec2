@@ -160,7 +160,7 @@ int main(int argc, char *argv[])
 
             bit = 7; byte = 0;
             for(i=0; i<nbit; i++) {
-                unpacked_bits_float[i] = 1.0 - 2.0*((bits[byte] >> bit) & 0x1);
+                unpacked_bits_float[i] = 1.0 - 2.0f*((bits[byte] >> bit) & 0x1);
                 unpacked_bits_char[i] = (bits[byte] >> bit) & 0x1;
                 bit--;
                 if (bit < 0) {
@@ -186,7 +186,7 @@ int main(int argc, char *argv[])
 
     if (report_var) {
         float var = codec2_get_var(codec2);
-        fprintf(stderr, "%s var: %5.2f std: %5.2f\n", argv[2], var, sqrt(var));
+        fprintf(stderr, "%s var: %5.2f std: %5.2f\n", argv[2], var, sqrtf(var));
     }
     codec2_destroy(codec2);
 

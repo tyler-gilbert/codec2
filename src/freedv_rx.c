@@ -68,7 +68,7 @@ int main(int argc, char *argv[]) {
     float                      squelch = 0;
     struct freedv             *freedv;
     int                        use_passthroughgain;
-    float                      passthroughgain = 0.0;
+    float                      passthroughgain = 0.0f;
       
     char f2020[80] = {0};
 #ifdef __LPCNET__

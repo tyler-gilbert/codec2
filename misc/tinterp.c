@@ -47,7 +47,7 @@ void make_amp(MODEL *model, float f0, float cdB, float mdBHz)
     model->Wo = f0*TWO_PI/FS;
     model->L  = PI/model->Wo;
     for(i=0; i<=model->L; i++)
-	model->A[i] = pow(10.0,(cdB + (float)i*model->Wo*mdBrad)/20.0);
+	model->A[i] = powf(10.0,(cdB + (float)i*model->Wo*mdBrad)/20.0);
     model->voiced = 1;
 }
 

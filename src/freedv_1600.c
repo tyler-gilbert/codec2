@@ -27,7 +27,7 @@
 #include "fdmdv_internal.h"
 
 void freedv_1600_open(struct freedv *f) {
-    f->snr_squelch_thresh = 2.0;
+    f->snr_squelch_thresh = 2.0f;
     f->squelch_en = true;
     f->tx_sync_bit = 0;
     int Nc = 16;
@@ -149,7 +149,7 @@ int freedv_comprx_fdmdv_1600(struct freedv *f, COMP demod_in[]) {
 
     COMP ademod_in[f->nin];
     for(i=0; i<f->nin; i++)
-        ademod_in[i] = fcmult(1.0/FDMDV_SCALE, demod_in[i]);
+        ademod_in[i] = fcmult(1.0f/FDMDV_SCALE, demod_in[i]);
 
     bits_per_fdmdv_frame  = fdmdv_bits_per_frame(f->fdmdv);
 

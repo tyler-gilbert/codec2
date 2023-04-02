@@ -122,27 +122,27 @@ char *argv[];
     init_decoder();
 
     for(i=0; i<MAX_AMP; i++)
-	phi_prev[i] = 0.0;
-    Wo_prev = 0.0;
+	phi_prev[i] = 0.0f;
+    Wo_prev = 0.0f;
 
     model.Wo = PI*(f0/4000.0);
-    G = 1000.0;
+    G = 1000.0f;
     model.L = floor(PI/model.Wo);
 
     //aks_to_H(&model, ak, G , H, P);
     //for(i=1; i<=model.L; i++)
-	model.A[i] = sqrt(H[i].real*H[i].real + H[i].imag*H[i].imag);
+	model.A[i] = sqrtf(H[i].real*H[i].real + H[i].imag*H[i].imag);
     //printf("L = %d\n", model.L);
     //model.L = 10;
     for(i=1; i<=model.L; i++) {
       model.A[i]   = 1000/model.L;
       model.phi[i] = 0;
-      H[i].real = 1.0; H[i].imag = 0.0;
+      H[i].real = 1.0f; H[i].imag = 0.0f;
     }
 
-    //ak[0] = 1.0;
+    //ak[0] = 1.0f;
     //for(i=1; i<=P; i++)
-    //  ak[i] = 0.0;
+    //  ak[i] = 0.0f;
 
     frames = 0;
     for(j=0; j<F; j++) {
@@ -155,11 +155,11 @@ char *argv[];
 	   Continuous model generally results in smooth phase track
 	   under these circumstances. */
 	if (j%2){
-	    H[1].real = 1.0; H[1].imag = 0.0;
-	    model.phi[1] = 0.0;
+	    H[1].real = 1.0f; H[1].imag = 0.0f;
+	    model.phi[1] = 0.0f;
 	}
 	else {
-	    H[1].real = 0.0; H[1].imag = 1.0;
+	    H[1].real = 0.0f; H[1].imag = 1.0f;
 	    model.phi[1] = PI/2;
 	}
 	#endif

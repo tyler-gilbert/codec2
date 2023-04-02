@@ -44,8 +44,8 @@
 
 void linreg(COMP *m, COMP *b, float x[], COMP y[], int n)
 {
-    float  sumx  = 0.0;         /* sum of x          */
-    float  sumx2 = 0.0;         /* sum of x^2        */
+    float  sumx  = 0.0f;         /* sum of x          */
+    float  sumx2 = 0.0f;         /* sum of x^2        */
     COMP   sumxy = {0.0,0.0};   /* sum of x * y      */
     COMP   sumy  = {0.0,0.0};   /* sum of y          */
     COMP   sumy2 = {0.0,0.0};   /* sum of y**2       */
@@ -65,12 +65,12 @@ void linreg(COMP *m, COMP *b, float x[], COMP y[], int n)
 
   if (denom == 0) {
       /* singular matrix. can't solve the problem */
-      zero.real = 0.0; zero.imag = 0.0;
+      zero.real = 0.0f; zero.imag = 0.0f;
       *m = zero;
       *b = zero;
   } else {
-      *m = fcmult(1.0/denom, cadd(fcmult(n, sumxy), cneg(fcmult(sumx,sumy))));
-      *b = fcmult(1.0/denom, cadd(fcmult(sumx2,sumy), cneg(fcmult(sumx, sumxy))));
+      *m = fcmult(1.0f/denom, cadd(fcmult(n, sumxy), cneg(fcmult(sumx,sumy))));
+      *b = fcmult(1.0f/denom, cadd(fcmult(sumx2,sumy), cneg(fcmult(sumx, sumxy))));
   }
 }
 

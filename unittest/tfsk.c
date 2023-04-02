@@ -197,7 +197,7 @@ int main(int argc,char *argv[]){
                 COMP modbuf_comp[n];
                 for(i=0; i<n; i++) {
                     modbuf_comp[i].real = modbuf[i];
-                    modbuf_comp[i].imag = 0.0;
+                    modbuf_comp[i].imag = 0.0f;
                 }
                 fsk_demod(fsk,bitbuf,modbuf_comp);
                 fwrite(bitbuf,sizeof(uint8_t),fsk->Nbits,fout);
@@ -212,7 +212,7 @@ int main(int argc,char *argv[]){
                 COMP modbuf_comp[n];
                 for(i=0; i<n; i++) {
                     modbuf_comp[i].real = modbuf[i];
-                    modbuf_comp[i].imag = 0.0;
+                    modbuf_comp[i].imag = 0.0f;
                 }
                 fsk_demod(fsk,bitbuf,modbuf_comp);
                 modbufp += fsk_nin(fsk);

@@ -12,7 +12,7 @@
 int main(void) {
     uint8_t bit;
     while(fread(&bit,sizeof(uint8_t), 1, stdin)) {
-        float llr = 10.0*(1-2*bit);
+        float llr = 10.0f*(1-2*bit);
         fwrite(&llr,sizeof(float),1,stdout);
     }
     return 0;

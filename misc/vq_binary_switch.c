@@ -23,12 +23,12 @@
 // equation (33) of [1], total cost of all hamming distance 1 vectors of vq index k
 float cost_of_distance_one(float *vq, int n, int dim, float *prob, int k, int st, int en, int verbose) {
   int log2N = log2(n);
-  float c = 0.0;
+  float c = 0.0f;
   for (int b=0; b<log2N; b++) {
     unsigned int index_neighbour = k ^ (1<<b);
-    float dist = 0.0;
+    float dist = 0.0f;
     for(int i=st; i<=en; i++)
-      dist += pow(vq[k*dim+i] - vq[index_neighbour*dim+i], 2.0);
+      dist += powf(vq[k*dim+i] - vq[index_neighbour*dim+i], 2.0);
     c += prob[k]*dist;
     if (verbose)
       printf("k: %d b: %d index_neighbour: %d dist: %f prob: %f c: %f \n", k, b, index_neighbour, dist, prob[k], c);
@@ -38,7 +38,7 @@ float cost_of_distance_one(float *vq, int n, int dim, float *prob, int k, int st
 
 // equation (39) of [1]
 float distortion_of_current_mapping(float *vq, int n, int dim, float *prob, int st, int en) {
-  float d = 0.0;
+  float d = 0.0f;
   for(int k=0; k<n; k++)
     d += cost_of_distance_one(vq, n, dim, prob, k, st, en, 0);
   return d;
@@ -175,7 +175,7 @@ int main(int argc, char *argv[]) {
    
     /* set probability of each vector to 1.0 as default */
     float prob[n];
-    for(int l=0; l<n; l++) prob[l] = 1.0;
+    for(int l=0; l<n; l++) prob[l] = 1.0f;
     if (strlen(prob_fn)) {
       fprintf(stderr, "Reading probability file: %s\n", prob_fn);
       FILE *fp = fopen(prob_fn,"rb");
@@ -183,7 +183,7 @@ int main(int argc, char *argv[]) {
       int nrd = fread(prob, sizeof(float), n, fp);
       assert(nrd == n);
       fclose(fp);
-      float sum = 0.0;
+      float sum = 0.0f;
       for(int l=0; l<n; l++) sum += prob[l];
       fprintf(stderr, "sum = %f\n", sum);
     }
@@ -208,7 +208,7 @@ int main(int argc, char *argv[]) {
       // Try switching each vector with A(i)
       float best_delta = 0; int best_j = 0;
       for(int j=1; j<n; j++) {
-	float distortion1, distortion2, delta = 0.0;
+	float distortion1, distortion2, delta = 0.0f;
 	
 	// we can't switch with ourself
 	if (j != A[i]) {

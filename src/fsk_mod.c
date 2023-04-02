@@ -51,7 +51,7 @@ int main(int argc,char *argv[]){
     while ((opt = getopt(argc, argv, "a:p:ct")) != -1) {
         switch (opt) {
         case 'a':
-            amp = atof(optarg)/2.0;  /* fsk_mod amplitude is +/-2 */
+            amp = atof(optarg)/2.0f;  /* fsk_mod amplitude is +/-2 */
             break;
         case 'c':
             complex = 1; bytes_per_sample = 4;

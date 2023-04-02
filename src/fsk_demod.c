@@ -281,7 +281,7 @@ int main(int argc,char *argv[]){
             /* S16 real input */
             for(i=0;i<fsk_nin(fsk);i++){
                 modbuf[i].real = ((float)rawbuf[i])/FDMDV_SCALE;
-                modbuf[i].imag = 0.0;
+                modbuf[i].imag = 0.0f;
             }
         }
         else {
@@ -289,8 +289,8 @@ int main(int argc,char *argv[]){
                 /* U8 complex */
                 uint8_t *rawbuf_u8 = (uint8_t*)rawbuf;
                 for(i=0;i<fsk_nin(fsk);i++){
-                    modbuf[i].real = ((float)rawbuf_u8[2*i]-127.0)/128.0;
-                    modbuf[i].imag = ((float)rawbuf_u8[2*i+1]-127.0)/128.0;
+                    modbuf[i].real = ((float)rawbuf_u8[2*i]-127.0)/128.0f;
+                    modbuf[i].imag = ((float)rawbuf_u8[2*i+1]-127.0)/128.0f;
                 }
             }
             else {

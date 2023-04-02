@@ -101,7 +101,7 @@ static int ofdm_nuwbits;            /* Unique word, used for positive indication
 
 static int fs_offset(COMP out[], COMP in[], int n, float sample_rate_ppm) {
     double f;
-    double tin = 0.0;
+    double tin = 0.0f;
     double step = 1.0 + sample_rate_ppm/1E6;
     int t1, t2;
     int tout = 0;
@@ -201,7 +201,7 @@ int main(int argc, char *argv[])
     ofdm_set_tx_bpf(ofdm, false);
 
     // same levels as Octave sim
-    ofdm->amp_scale = 1.0;
+    ofdm->amp_scale = 1.0f;
 
     // make local copies for convenience
     ofdm_tx_centre = ofdm_config->tx_centre;
@@ -384,7 +384,7 @@ int main(int argc, char *argv[])
 
     /* start this with something sensible otherwise LDPC decode fails in tofdm.m */
 
-    ofdm->mean_amp = 1.0;
+    ofdm->mean_amp = 1.0f;
 
     for(f=0; f<NFRAMES; f++) {
         /* For initial testing, timing est is off, so nin is always
@@ -405,8 +405,8 @@ int main(int argc, char *argv[])
         }
         //printf("nin: %d prx: %d lnew: %d\n", nin, prx, lnew);
         for(i=0; i<nin; i++) {
-            rxbuf_in[i].real = 0.0;
-            rxbuf_in[i].imag = 0.0;
+            rxbuf_in[i].real = 0.0f;
+            rxbuf_in[i].imag = 0.0f;
         }
 
         if (lnew) {
@@ -421,7 +421,7 @@ int main(int argc, char *argv[])
 
         for(i=0; i<nin; i++) {
 	    rxbuf_in[i].real = (float)rx_scaled[i]/ASCALE;
-            rxbuf_in[i].imag = 0.0;
+            rxbuf_in[i].imag = 0.0f;
         }
 #endif
 

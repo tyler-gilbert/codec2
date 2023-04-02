@@ -38,7 +38,7 @@ static float phi0_orig( float x ) {
   /* return( 8.1736e-003 ); */
   else {
     z = (float) exp(x);
-    return( (float) log( (z+1)/(z-1) ) ); 
+    return( (float) logf( (z+1)/(z-1) ) );
   }
 }
 
@@ -70,7 +70,7 @@ int main(void) {
 
     printf("Net error %f\n", (double)errsum);
     printf("avg error %f\n", (double)errsum/errcnt);
-    printf("rms error %f\n", (double)sqrt(errsum2/errcnt));
+    printf("rms error %f\n", (double)sqrtf(errsum2/errcnt));
 
     return(0);
 }

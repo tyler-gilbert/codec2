@@ -239,7 +239,7 @@ int main(int argc, char *argv[])
            nread = CodeLength/2;
            offset = CodeLength/2;
            for(i=0; i<offset; i++) {
-               input_double[i] = 0.0;
+               input_double[i] = 0.0f;
            }
        }
 

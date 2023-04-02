@@ -928,7 +928,7 @@ int freedv_bits_to_speech(struct freedv *f, short speech_out[], short demod_in[]
                 lpcnet_dec(f->lpcnet, (char*) f->rx_payload_bits + i*bits_per_codec_frame, speech_out);
                 /* ear protection: on frames with errors and clipping, reduce level by 12dB */
                 if (rx_status & FREEDV_RX_BIT_ERRORS) {
-                    int max = 0.0;
+                    int max = 0.0f;
                     for (int j=0; j<lpcnet_samples_per_frame(f->lpcnet); j++)
                         if (abs(speech_out[j]) > max) max = abs(speech_out[j]);
                     if (max == 32767)
@@ -987,7 +987,7 @@ int freedv_rawdatarx(struct freedv *f, unsigned char *packed_payload_bits, short
 
     for(int i=0; i<nin; i++) {
         demod_in_comp[i].real = (float)demod_in[i];
-        demod_in_comp[i].imag = 0.0;
+        demod_in_comp[i].imag = 0.0f;
     }
 
     return freedv_rawdatacomprx(f, packed_payload_bits, demod_in_comp);

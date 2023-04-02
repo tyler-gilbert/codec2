@@ -44,7 +44,7 @@ int main() {
     FILE *f8, *f8in;
 
     int i,f,t,t1;
-    float freq = 800.0;
+    float freq = 800.0f;
 
     f16 = fopen("out16.raw", "wb");
     assert(f16 != NULL);
@@ -55,20 +55,20 @@ int main() {
 
     /* clear filter memories */
     for(i=0; i<FDMDV_OS_TAPS_8K; i++)
-	in8k[i] = 0.0;
+	in8k[i] = 0.0f;
     for(i=0; i<FDMDV_OS_TAPS_16K; i++)
-	in16k[i] = 0.0;
+	in16k[i] = 0.0f;
 
     t = t1 = 0;
     for(f=0; f<FRAMES; f++) {
 
 #ifdef DC
 	for(i=0; i<N8; i++)
-	    in8k[FDMDV_OS_TAPS_8K+i] = 16000.0;
+	    in8k[FDMDV_OS_TAPS_8K+i] = 16000.0f;
 #endif
 #ifdef SINE
 	for(i=0; i<N8; i++,t++)
-	    in8k[FDMDV_OS_TAPS_8K+i] = 16000.0*cos(TWO_PI*t*freq/(FS/FDMDV_OS));
+	    in8k[FDMDV_OS_TAPS_8K+i] = 16000.0f*cosf(TWO_PI*t*freq/(FS/FDMDV_OS));
 #endif
 	for(i=0; i<N8; i++)
 	    in8k_short[i] = (short)in8k[i];
@@ -85,7 +85,7 @@ int main() {
 	/* add a 6 kHz spurious signal, down sampler should
 	   knock this out */
 	for(i=0; i<N16; i++,t1++)
-	    in16k[i+FDMDV_OS_TAPS_16K] = out16k[i] + 16000.0*cos(TWO_PI*t1*6000.0/FS);
+	    in16k[i+FDMDV_OS_TAPS_16K] = out16k[i] + 16000.0f*cosf(TWO_PI*t1*6000.0f/FS);
 
 	/* downsample */
 	fdmdv_16_to_8(out8k, &in16k[FDMDV_OS_TAPS_16K], N8);

@@ -32,6 +32,7 @@
 #undef PROFILE
 #include "machdep.h"
 #include "os.h"
+#include "debug_alloc.h"
 
 #include <assert.h>
 #include <math.h>
@@ -44,14 +45,14 @@
 \*---------------------------------------------------------------------------*/
 
 #define PMAX_M      320		/* maximum NLP analysis window size     */
-#define COEFF       0.95	/* notch filter parameter               */
+#define COEFF       0.95f	/* notch filter parameter               */
 #define PE_FFT_SIZE 512		/* DFT size for pitch estimation        */
 #define DEC         5		/* decimation factor                    */
 #define SAMPLE_RATE 8000
-#define PI          3.141592654	/* mathematical constant                */
-#define T           0.1         /* threshold for local minima candidate */
+#define PI          3.141592654f	/* mathematical constant                */
+#define T           0.1f        /* threshold for local minima candidate */
 #define F0_MAX      500
-#define CNLP        0.3	        /* post processor constant              */
+#define CNLP        0.3f	        /* post processor constant              */
 #define NLP_NTAP 48	        /* Decimation LPF order */
 
 /* 8 to 16 kHz sample rate conversion */
@@ -151,7 +152,7 @@ void *nlp_create(C2CONST *c2const)
     int  m = c2const->m_pitch;
     int  Fs = c2const->Fs;
 
-    nlp = (NLP*)malloc(sizeof(NLP));
+    nlp = (NLP*)MALLOC(sizeof(NLP));
     if (nlp == NULL)
 	return NULL;
 
@@ -163,9 +164,9 @@ void *nlp_create(C2CONST *c2const)
     /* if running at 16kHz allocate storage for decimating filter memory */
 
     if (Fs == 16000) {
-        nlp->Sn16k = (float*)malloc(sizeof(float)*(FDMDV_OS_TAPS_16K + c2const->n_samp));
+        nlp->Sn16k = (float*)MALLOC(sizeof(float)*(FDMDV_OS_TAPS_16K + c2const->n_samp));
         for(i=0; i<FDMDV_OS_TAPS_16K; i++) {
-           nlp->Sn16k[i] = 0.0;
+           nlp->Sn16k[i] = 0.0f;
         }
         if (nlp->Sn16k == NULL) {
             free(nlp);
@@ -180,15 +181,15 @@ void *nlp_create(C2CONST *c2const)
     assert(m <= PMAX_M);
     
     for(i=0; i<m/DEC; i++) {
-	nlp->w[i] = 0.5 - 0.5*cosf(2*PI*i/(m/DEC-1));
+	nlp->w[i] = 0.5f - 0.5f*cosf(2.0f*PI*i/(m/DEC-1));
     }
 
     for(i=0; i<PMAX_M; i++)
-	nlp->sq[i] = 0.0;
-    nlp->mem_x = 0.0;
-    nlp->mem_y = 0.0;
+	nlp->sq[i] = 0.0f;
+    nlp->mem_x = 0.0f;
+    nlp->mem_y = 0.0f;
     for(i=0; i<NLP_NTAP; i++)
-	nlp->mem_fir[i] = 0.0;
+	nlp->mem_fir[i] = 0.0f;
 
     nlp->fft_cfg = codec2_fft_alloc (PE_FFT_SIZE, 0, NULL, NULL);
     assert(nlp->fft_cfg != NULL);
@@ -212,9 +213,9 @@ void nlp_destroy(void *nlp_state)
 
     codec2_fft_free(nlp->fft_cfg);
     if (nlp->Fs == 16000) {
-        free(nlp->Sn16k);
+        FREE(nlp->Sn16k);
     }
-    free(nlp_state);
+    FREE(nlp_state);
 }
 
 /*---------------------------------------------------------------------------*\
@@ -313,7 +314,7 @@ float nlp(
 	notch += COEFF*nlp->mem_y;
 	nlp->mem_x = nlp->sq[i];
 	nlp->mem_y = notch;
-	nlp->sq[i] = notch + 1.0;  /* With 0 input vectors to codec,
+	nlp->sq[i] = notch + 1.0f;  /* With 0 input vectors to codec,
 				      kiss_fft() would take a long
 				      time to execute when running in
 				      real time.  Problem was traced
@@ -331,7 +332,7 @@ float nlp(
 	    nlp->mem_fir[j] = nlp->mem_fir[j+1];
 	nlp->mem_fir[NLP_NTAP-1] = nlp->sq[i];
 
-	nlp->sq[i] = 0.0;
+	nlp->sq[i] = 0.0f;
 	for(j=0; j<NLP_NTAP; j++)
 	    nlp->sq[i] += nlp->mem_fir[j]*nlp_fir[j];
     }
@@ -341,8 +342,8 @@ float nlp(
     /* Decimate and DFT */
 
     for(i=0; i<PE_FFT_SIZE; i++) {
-	Fw[i].real = 0.0;
-	Fw[i].imag = 0.0;
+	Fw[i].real = 0.0f;
+	Fw[i].imag = 0.0f;
     }
     for(i=0; i<m/DEC; i++) {
 	Fw[i].real = nlp->sq[i*DEC]*nlp->w[i];
@@ -373,7 +374,7 @@ float nlp(
 
     /* find global peak */
 
-    gmax = 0.0;
+    gmax = 0.0f;
     gmax_bin = PE_FFT_SIZE*DEC/pmax;
     for(i=PE_FFT_SIZE*DEC/pmax; i<=PE_FFT_SIZE*DEC/pmin; i++) {
 	if (Fw[i].real > gmax) {
@@ -448,8 +449,8 @@ float post_process_sub_multiples(COMP Fw[],
     while(gmax_bin/mult >= min_bin) {
 
 	b = gmax_bin/mult;			/* determine search interval */
-	bmin = 0.8*b;
-	bmax = 1.2*b;
+	bmin = 0.8f*b;
+	bmax = 1.2f*b;
 	if (bmin < min_bin)
 	    bmin = min_bin;
 
@@ -457,7 +458,7 @@ float post_process_sub_multiples(COMP Fw[],
 	    this is a form of pitch tracking */
 
 	if ((prev_f0_bin > bmin) && (prev_f0_bin < bmax))
-	    thresh = CNLP*0.5*gmax;
+	    thresh = CNLP*0.5f*gmax;
 	else
 	    thresh = CNLP*gmax;
 
@@ -508,7 +509,7 @@ static void fdmdv_16_to_8(float out8k[], float in16k[], int n)
     int   i,j,k;
 
     for(i=0, k=0; k<n; i+=FDMDV_OS, k++) {
-	acc = 0.0;
+	acc = 0.0f;
 	for(j=0; j<FDMDV_OS_TAPS_16K; j++)
 	    acc += fdmdv_os_filter[j]*in16k[i-j];
         out8k[k] = acc;

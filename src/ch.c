@@ -57,8 +57,8 @@
 float gaussian(void) {
     double x = (double)rand() / RAND_MAX;
     double y = (double)rand() / RAND_MAX;
-    double z = sqrt(-2 * log(x)) * cos(2 * M_PI * y);
-    return sqrt(1./2.) * z;
+    double z = sqrtf(-2 * logf(x)) * cosf(2 * M_PI * y);
+    return sqrtf(1./2.) * z;
 }
 
 // complex noise sample
@@ -132,10 +132,10 @@ int main(int argc, char *argv[])
     }
 
     NodB = -100;
-    Fs = 8000; foff_hz = 0.0; fading_en = 0; ctest = 0;
-    clip =32767; gain = 1.0;
+    Fs = 8000; foff_hz = 0.0f; fading_en = 0; ctest = 0;
+    clip =32767; gain = 1.0f;
     ssbfilt_en = 1; complex_out = 0;
-    fading_dir = strdup(DEFAULT_FADING_DIR); user_multipath_delay = -1.0;
+    fading_dir = strdup(DEFAULT_FADING_DIR); user_multipath_delay = -1.0f;
 
     int o = 0;
     int opt_idx = 0;
@@ -207,18 +207,18 @@ int main(int argc, char *argv[])
         }
     }
 
-    phase_ch.real = 1.0; phase_ch.imag = 0.0;
+    phase_ch.real = 1.0f; phase_ch.imag = 0.0f;
 
     /*  N = var = NoFs */
 
     // arbitrary noise scaling, to maintain backwards compatibility with many tests.  TODO make the No
     // units more sensible, and fix all the tests that depend on this scaling
-    No = pow(10.0, NodB/10.0)*1000*1000;
+    No = powf(10.0, NodB/10.0)*1000*1000;
     variance = Fs*No;
 
-    tx_pwr = tx_pwr_fade = noise_pwr = 0.0;
+    tx_pwr = tx_pwr_fade = noise_pwr = 0.0f;
     noutclipped = 0; nclipped = 0;
-    peak = 0.0;
+    peak = 0.0f;
 
     /* init HF fading model */
 
@@ -265,8 +265,8 @@ int main(int argc, char *argv[])
         ch_fdm_delay = (COMP*)MALLOC((nhfdelay+COHPSK_NOM_SAMPLES_PER_FRAME)*sizeof(COMP));
         assert(ch_fdm_delay != NULL);
         for(i=0; i<nhfdelay+COHPSK_NOM_SAMPLES_PER_FRAME; i++) {
-            ch_fdm_delay[i].real = 0.0;
-            ch_fdm_delay[i].imag = 0.0;
+            ch_fdm_delay[i].real = 0.0f;
+            ch_fdm_delay[i].imag = 0.0f;
         }
 
         /* optionally override delay from command line */
@@ -281,15 +281,15 @@ int main(int argc, char *argv[])
 
     assert(HT_N == sizeof(ht_coeff)/sizeof(COMP));
     for(i=0; i<HT_N; i++) {
-        htbuf[i] = 0.0;
+        htbuf[i] = 0.0f;
     }
     for(i=0; i<SSBFILT_N; i++) {
-        ssbfiltbuf[i].real = 0.0; ssbfiltbuf[i].imag = 0.0;
+        ssbfiltbuf[i].real = 0.0f; ssbfiltbuf[i].imag = 0.0f;
     }
     COMP lo_phase = {1.0,0.0};
     COMP lo_freq;
-    lo_freq.real = cos(2.0*M_PI*SSBFILT_CENTRE/Fs);
-    lo_freq.imag = sin(2.0*M_PI*SSBFILT_CENTRE/Fs);
+    lo_freq.real = cosf(2.0f*M_PI*SSBFILT_CENTRE/Fs);
+    lo_freq.imag = sin(2.0f*M_PI*SSBFILT_CENTRE/Fs);
 
     fprintf(stderr, "ch: Fs: %d NodB: %4.2f foff: %4.2f Hz fading: %d nhfdelay: %d clip: %4.2f ssbfilt: %d complexout: %d\n",
             Fs, NodB, foff_hz, fading_en, nhfdelay, clip, ssbfilt_en, complex_out);
@@ -316,8 +316,8 @@ int main(int argc, char *argv[])
 
             /* FIR filter with HT to get imag, just delay to get real */
 
-            ch_in[i].real = 0.0;
-            ch_in[i].imag = 0.0;
+            ch_in[i].real = 0.0f;
+            ch_in[i].imag = 0.0f;
             for(k=0; k<HT_N; k++) {
                 ch_in[i].real += htbuf[j-k]*ht_coeff[k].real;
                 ch_in[i].imag += htbuf[j-k]*ht_coeff[k].imag;
@@ -335,7 +335,7 @@ int main(int argc, char *argv[])
         \*---------------------------------------------------------*/
 
         for(i=0; i<BUF_N; i++) {
-            float mag = sqrt(ch_in[i].real*ch_in[i].real + ch_in[i].imag*ch_in[i].imag);
+            float mag = sqrtf(ch_in[i].real*ch_in[i].real + ch_in[i].imag*ch_in[i].imag);
             float angle = atan2(ch_in[i].imag, ch_in[i].real);
             if (mag > clip) {
               mag = clip;
@@ -348,7 +348,7 @@ int main(int argc, char *argv[])
                     peak = mag;
                     //fprintf(stderr, "%d %f\n",frames, mag);
                 }
-            ch_in[i].real = mag*cos(angle);
+            ch_in[i].real = mag*cosf(angle);
             ch_in[i].imag = mag*sin(angle);
         }
 
@@ -396,16 +396,16 @@ int main(int argc, char *argv[])
            signal, which is half the power. */
 
         for(i=0; i<BUF_N; i++) {
-            tx_pwr_fade += pow(ch_fdm[i].real, 2.0);
+            tx_pwr_fade += powf(ch_fdm[i].real, 2.0);
         }
 
         /* AWGN noise ------------------------------------------*/
 
         for(i=0; i<BUF_N; i++) {
             COMP n = noise();
-            scaled_noise = fcmult(sqrt(variance), n);
+            scaled_noise = fcmult(sqrtf(variance), n);
             ch_fdm[i] = cadd(ch_fdm[i], scaled_noise);
-            noise_pwr += pow(scaled_noise.real, 2.0) + pow(scaled_noise.imag, 2.0);
+            noise_pwr += powf(scaled_noise.real, 2.0) + powf(scaled_noise.imag, 2.0);
         }
 
         /* FIR filter to simulate (a rather flat) SSB filter. We
@@ -415,7 +415,7 @@ int main(int argc, char *argv[])
         for(i=0, j=SSBFILT_N; i<BUF_N; i++,j++) {
             if (ssbfilt_en) {
                 ssbfiltbuf[j] = cmult(ch_fdm[i], cconj(lo_phase));
-                ssbfiltout[i].real = 0.0; ssbfiltout[i].imag = 0.0;
+                ssbfiltout[i].real = 0.0f; ssbfiltout[i].imag = 0.0f;
                 for(k=0; k<SSBFILT_N; k++) {
                     ssbfiltout[i].real += ssbfiltbuf[j-k].real*ssbfilt_coeff[k];
                     ssbfiltout[i].imag += ssbfiltbuf[j-k].imag*ssbfilt_coeff[k];
@@ -436,13 +436,13 @@ int main(int argc, char *argv[])
         short bufout[nout], *pout=bufout;
         for(i=0; i<BUF_N; i++) {
             sam = ssbfiltout[i].real;
-            if (sam >  32767.0) { noutclipped++; sam = 32767.0; }
-            if (sam < -32767.0) { noutclipped++; sam = -32767.0; }
+            if (sam >  32767.0) { noutclipped++; sam = 32767.0f; }
+            if (sam < -32767.0) { noutclipped++; sam = -32767.0f; }
             *pout++ = sam;
             if (complex_out) {
                 sam = ssbfiltout[i].imag;
-                if (sam >  32767.0) { noutclipped++; sam = 32767.0; }
-                if (sam < -32767.0) { noutclipped++; sam = -32767.0; }
+                if (sam >  32767.0) { noutclipped++; sam = 32767.0f; }
+                if (sam < -32767.0) { noutclipped++; sam = -32767.0f; }
                 *pout++ = sam;
             }
         }
@@ -459,14 +459,14 @@ int main(int argc, char *argv[])
     fclose(fout);
 
     int nsamples = frames*BUF_N;
-    papr = 10*log10(peak*peak/(tx_pwr/nsamples));
-    CNo = 10*log10(tx_pwr/(noise_pwr/(Fs)));
-    snr3k = CNo - 10*log10(3000);
-    float outclipped_percent = noutclipped*100.0/nsamples;
+    papr = 10*log10f(peak*peak/(tx_pwr/nsamples));
+    CNo = 10*log10f(tx_pwr/(noise_pwr/(Fs)));
+    snr3k = CNo - 10*log10f(3000);
+    float outclipped_percent = noutclipped*100.0f/nsamples;
     fprintf(stderr, "ch: SNR3k(dB): %8.2f  C/No....: %8.2f\n", snr3k, CNo);
-    fprintf(stderr, "ch: peak.....: %8.2f  RMS.....: %8.2f   CPAPR.....: %5.2f \n", peak, sqrt(tx_pwr/nsamples), papr);
+    fprintf(stderr, "ch: peak.....: %8.2f  RMS.....: %8.2f   CPAPR.....: %5.2f \n", peak, sqrtf(tx_pwr/nsamples), papr);
     fprintf(stderr, "ch: Nsamples.: %8d  clipped.: %8.2f%%  OutClipped: %5.2f%%\n",
-                    nsamples, nclipped*100.0/nsamples, outclipped_percent);
+                    nsamples, nclipped*100.0f/nsamples, outclipped_percent);
     if (outclipped_percent > 0.1) fprintf(stderr, "ch: WARNING output clipping\n");
 
     if (ffading != NULL) fclose(ffading);

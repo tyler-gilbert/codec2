@@ -186,7 +186,7 @@ void run_modem(struct OFDM *ofdm, int tx_bits[], int rx_bits[], COMP tx_rx[]) {
     ofdm_set_foff_est_enable(ofdm, true);
     ofdm_set_phase_est_enable(ofdm, true);
 
-    ofdm->mean_amp = 1.0;
+    ofdm->mean_amp = 1.0f;
 
     nin = ofdm_get_nin(ofdm);
 
@@ -200,8 +200,8 @@ void run_modem(struct OFDM *ofdm, int tx_bits[], int rx_bits[], COMP tx_rx[]) {
         lnew = nin;
     }
     for(i=0; i<nin; i++) {
-        rxbuf_in[i].real = 0.0;
-        rxbuf_in[i].imag = 0.0;
+        rxbuf_in[i].real = 0.0f;
+        rxbuf_in[i].imag = 0.0f;
     }
 
     if (lnew) {

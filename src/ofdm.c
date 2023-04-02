@@ -214,13 +214,13 @@ struct OFDM *ofdm_create(const struct OFDM_CONFIG *config) {
         ofdm->amp_est_mode = 0;
         ofdm->tx_bpf_en = true;
         ofdm->amp_scale = 245E3;
-        ofdm->clip_gain1 = 2.0;
+        ofdm->clip_gain1 = 2.0f;
         ofdm->clip_gain2 = 0.9;
         ofdm->clip_en = false;
         ofdm->foff_limiter = false;
         ofdm->data_mode = "";
-        ofdm->fmin = -50.0;                       /* frequency minimum for ofdm acquisition range */
-        ofdm->fmax = 50.0;                        /* frequency maximum for ofdm acquisition range */
+        ofdm->fmin = -50.0f;                       /* frequency minimum for ofdm acquisition range */
+        ofdm->fmax = 50.0f;                        /* frequency maximum for ofdm acquisition range */
         memset(ofdm->tx_uw, 0, ofdm->nuwbits);
     } else {
         /* Use the users values */
@@ -1204,7 +1204,7 @@ static float est_timing_and_freq(struct OFDM *ofdm,
                                  int tstep, float fmin, float fmax, float fstep) {
     int Ncorr = Nrx - Npsam + 1;
     float max_corr = 0;
-    *t_est = 0; *foff_est = 0.0;
+    *t_est = 0; *foff_est = 0.0f;
     for (float afcoarse=fmin; afcoarse<=fmax; afcoarse += fstep) {
         float w = TAU * afcoarse / ofdm->fs;
         complex float mvec[Npsam];
@@ -1257,7 +1257,7 @@ static void burst_acquisition_detector(struct OFDM *ofdm,
 
     // refine estimate over finer grid
     fmin = *foff_est - ceilf(fstep/2.0); fmax = *foff_est + ceilf(fstep/2.0); 
-    int fine_st = n + *ct_est - tstep/2.0;
+    int fine_st = n + *ct_est - tstep/2.0f;
     *timing_mx = est_timing_and_freq(ofdm, ct_est, foff_est,
                                  &rx[fine_st], ofdm->samplesperframe + tstep, 
                                  known_sequence, ofdm->samplesperframe,
@@ -1668,8 +1668,8 @@ static void ofdm_demod_core(struct OFDM *ofdm, int *rx_bits) {
         float freq_err_hz = cargf(freq_err_rect) * ofdm->rs / (TAU * ofdm->ns);
         if (ofdm->foff_limiter) {
             /* optionally tame updates in low SNR channels */
-            if (freq_err_hz >  1.0) freq_err_hz = 1.0;
-            if (freq_err_hz < -1.0) freq_err_hz = -1.0;
+            if (freq_err_hz >  1.0) freq_err_hz = 1.0f;
+            if (freq_err_hz < -1.0) freq_err_hz = -1.0f;
         }
         ofdm->foff_est_hz += (ofdm->foff_est_gain * freq_err_hz);
     }
@@ -1747,7 +1747,7 @@ static void ofdm_demod_core(struct OFDM *ofdm, int *rx_bits) {
                 // legacy 700D ampl est method
                 aamp_est_pilot[i] = cabsf(aphase_est_pilot_rect);
             } else {
-                aamp_est_pilot[i] = cabsf(ofdm->rx_sym[1][i]) + cabsf(ofdm->rx_sym[ofdm->ns + 1][i])/2.0;
+                aamp_est_pilot[i] = cabsf(ofdm->rx_sym[1][i]) + cabsf(ofdm->rx_sym[ofdm->ns + 1][i])/2.0f;
             }
         }
 
@@ -2483,7 +2483,7 @@ void ofdm_generate_preamble(struct OFDM *ofdm, COMP *tx_preamble, int seed) {
   for(int i=0; i<ofdm_preamble.bitsperpacket; i++) 
       preamble_bits[i] = r[i] > 16384;
   // ensures the signal passes through hilbert clipper unchanged
-  ofdm_preamble.amp_scale = 1.0; 
+  ofdm_preamble.amp_scale = 1.0f;
   ofdm_preamble.tx_bpf_en = false;
   ofdm_preamble.clip_en = false;
   ofdm_mod(&ofdm_preamble, tx_preamble, preamble_bits);

@@ -174,7 +174,7 @@ int main(int argc, char *argv[])
 
 	for(i=0; i<nin_frame; i++) {
 	    rx_fdm[i].real = rx_fdm_scaled[i]/COHPSK_SCALE;
-            rx_fdm[i].imag = 0.0;
+            rx_fdm[i].imag = 0.0f;
         }
 
 	cohpsk_demod(cohpsk, rx_bits, &sync, rx_fdm, &nin_frame);
@@ -183,7 +183,7 @@ int main(int argc, char *argv[])
             if (diversity == 1) {
                 if (sd == 0) {
                     for(i=0; i<COHPSK_BITS_PER_FRAME; i++)
-                        rx_bits_char[i] = rx_bits[i] < 0.0;
+                        rx_bits_char[i] = rx_bits[i] < 0.0f;
                     fwrite(rx_bits_char, sizeof(char), COHPSK_BITS_PER_FRAME, fout);
                 }
                 else {
@@ -195,10 +195,10 @@ int main(int argc, char *argv[])
             else {
                 if (sd == 0) {
                     for(i=0; i<COHPSK_BITS_PER_FRAME; i++)
-                        rx_bits_char[i] = cohpsk->rx_bits_lower[i] < 0.0;
+                        rx_bits_char[i] = cohpsk->rx_bits_lower[i] < 0.0f;
                     fwrite(rx_bits_char, sizeof(char), COHPSK_BITS_PER_FRAME, fout);
                     for(i=0; i<COHPSK_BITS_PER_FRAME; i++)
-                        rx_bits_char[i] = cohpsk->rx_bits_upper[i] < 0.0;
+                        rx_bits_char[i] = cohpsk->rx_bits_upper[i] < 0.0f;
                     fwrite(rx_bits_char, sizeof(char), COHPSK_BITS_PER_FRAME, fout);
                 }
                 else {

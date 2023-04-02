@@ -124,7 +124,7 @@ int main(int argc, char *argv[])
     #endif
 
     for(i=0; i<m; i++) {
-      Sn[i] = 0.0;
+      Sn[i] = 0.0f;
     }
 
     nlp_states = nlp_create(&c2const);

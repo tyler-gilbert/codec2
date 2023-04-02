@@ -38,7 +38,7 @@ extern char *ofdm_statemode[];
 #ifdef __LPCNET__
 void freedv_2020x_open(struct freedv *f) {
     f->speech_sample_rate = FREEDV_FS_16000;
-    f->snr_squelch_thresh = 4.0;
+    f->snr_squelch_thresh = 4.0f;
     f->squelch_en = 0;
 
     struct OFDM_CONFIG ofdm_config;
@@ -228,13 +228,13 @@ int freedv_comprx_2020(struct freedv *f, COMP demod_in[]) {
     f->sync = 0;
 
     // TODO: should be higher for 2020?
-    float EsNo = 3.0;
+    float EsNo = 3.0f;
 
     /* looking for modem sync */
 
     if (ofdm->sync_state == search) {
         ofdm_sync_search(f->ofdm, demod_in);
-        f->snr_est = -5.0;
+        f->snr_est = -5.0f;
     }
 
     /* OK modem is in sync */

@@ -47,10 +47,10 @@ int main(void) {
     
     fsk_rx_filt_to_llrs(llrs, rx_filt, V_EST, SNR_EST, M, NSYM);
 
-    float error = 0.0;
+    float error = 0.0f;
     for(int i=0; i<NSYM*BPS; i++) {
         fprintf(stderr,"% f\n",llrs[i]);
-        error += pow(llrs[i]-llrs_target[i],2.0);
+        error += powf(llrs[i]-llrs_target[i],2.0);
     }
 
     if (error < 1E-3) {

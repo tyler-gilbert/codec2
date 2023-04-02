@@ -155,9 +155,9 @@ int main(int argc, char *argv[])
     }; /* end if - extension / header detection */
 
     error_mode = NONE;
-    ber = 0.0;
-    burst_length = burst_period = 0.0;
-    burst_timer = 0.0;
+    ber = 0.0f;
+    burst_length = burst_period = 0.0f;
+    burst_timer = 0.0f;
     natural = softdec = bitperchar = 0;
     report_energy = 0;
 #ifdef DUMP
@@ -297,7 +297,7 @@ int main(int argc, char *argv[])
 
                 for(i=nstart_bit; i<nend_bit+1; i++) {
                     r = (float)rand()/RAND_MAX;
-                    if (r < 0.5) {
+                    if (r < 0.5f) {
                         byte = i/8;
                         bits[byte] ^= 1 << (7 - i + byte*8);
                         bit_errors++;
@@ -306,7 +306,7 @@ int main(int argc, char *argv[])
 		}
 
                 if (burst_timer > burst_period) {
-                    burst_timer = 0.0;
+                    burst_timer = 0.0f;
                     next_state = 0;
                 }
                 break;
@@ -324,7 +324,7 @@ int main(int argc, char *argv[])
             //fprintf(stderr, "ber_est: %f\n", ber_est);
         }
         else
-            ber_est = 0.0;
+            ber_est = 0.0f;
 
         if (softdec) {
             /* pack bits, MSB received first  */

@@ -20,7 +20,7 @@ int main(int argc, char *argv[]) {
     FILE  *fin, *fout;
     short  buf[N];
     float  Sn[N], Sn_de[N];
-    float  de_mem = 0.0;
+    float  de_mem = 0.0f;
     int    i;
 
     if (argc != 3) {

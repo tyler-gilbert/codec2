@@ -61,7 +61,7 @@ int main(int argc, char *argv[]) {
         exit(1);
     }
     nlp_states = nlp_create(&c2const);
-    prev_f0 = 1.0/P_MAX_S;
+    prev_f0 = 1.0f/P_MAX_S;
     fft_fwd_cfg = codec2_fft_alloc(FFT_ENC, 0, NULL, NULL); 
     make_analysis_window(&c2const,fft_fwd_cfg, w, W);
 
@@ -69,7 +69,7 @@ int main(int argc, char *argv[]) {
     phase_fft_inv_cfg = codec2_fft_alloc(NEWAMP1_PHASE_NFFT, 1, NULL, NULL);
 
     for(i=0; i<m_pitch; i++) {
-	Sn[i] = 1.0;
+	Sn[i] = 1.0f;
     }
 
     int K = 20;
@@ -87,23 +87,23 @@ int main(int argc, char *argv[]) {
     float model_octave_[FRAMES][MAX_AMP+2];
     COMP  H[FRAMES][MAX_AMP];
     int indexes[FRAMES][NEWAMP1_N_INDEXES];
-    float se = 0.0;
+    float se = 0.0f;
     float eq[K];
         
     for(k=0; k<K; k++)
-        eq[k] = 0.0;
+        eq[k] = 0.0f;
     
     for(f=0; f<FRAMES; f++) {
         for(m=0; m<MAX_AMP+2; m++) {
-            model_octave[f][m] = 0.0;
-            model_octave_[f][m] = 0.0;
+            model_octave[f][m] = 0.0f;
+            model_octave_[f][m] = 0.0f;
         }
         for(m=0; m<MAX_AMP; m++) {
-            H[f][m].real = 0.0;
-            H[f][m].imag = 0.0;
+            H[f][m].real = 0.0f;
+            H[f][m].imag = 0.0f;
         }
         for(k=0; k<K; k++)
-            interpolated_surface_[f][k] = 0.0;
+            interpolated_surface_[f][k] = 0.0f;
         voicing_[f] = 0;
     }
 
@@ -194,9 +194,9 @@ int main(int argc, char *argv[]) {
     /* initial conditions */
 
     for(k=0; k<K; k++)
-        prev_rate_K_vec_[k] = 0.0;
+        prev_rate_K_vec_[k] = 0.0f;
     voicing_left = 0;
-    Wo_left = 2.0*M_PI/100.0;
+    Wo_left = 2.0f*M_PI/100.0f;
 
     /* decoder runs on every M-th frame, 25Hz frame rate, offset at
        start is to minimise processing delay (thanks Jeroen!) */

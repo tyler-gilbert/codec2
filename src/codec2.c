@@ -103,6 +103,7 @@ static void ear_protection(float in_out[], int n);
 
 \*---------------------------------------------------------------------------*/
 
+int __errno = 0;
 
 //Don't create CODEC2_MODE_450PWB for Encoding as it has undefined behavior !
 struct CODEC2 * codec2_create(int mode)
@@ -110,11 +111,12 @@ struct CODEC2 * codec2_create(int mode)
     struct CODEC2 *c2;
     int            i,l;
 
+
     // ALL POSSIBLE MODES MUST BE CHECKED HERE!
     // we test if the desired mode is enabled at compile time
     // and return NULL if not
 
-    if (false == ( CODEC2_MODE_ACTIVE(CODEC2_MODE_3200, mode) 
+    if (false == ( CODEC2_MODE_ACTIVE(CODEC2_MODE_3200, mode)
 		   || CODEC2_MODE_ACTIVE(CODEC2_MODE_2400, mode)
 		   || CODEC2_MODE_ACTIVE(CODEC2_MODE_1600, mode)
 		   || CODEC2_MODE_ACTIVE(CODEC2_MODE_1400, mode)
@@ -126,7 +128,8 @@ struct CODEC2 * codec2_create(int mode)
 		) ) 
     {
         return NULL;
-    }  
+    }
+
 
     c2 = (struct CODEC2*)MALLOC(sizeof(struct CODEC2));
     if (c2 == NULL)
@@ -169,21 +172,21 @@ struct CODEC2 * codec2_create(int mode)
     }
 
     for(i=0; i<m_pitch; i++)
-	c2->Sn[i] = 1.0;
-    c2->hpf_states[0] = c2->hpf_states[1] = 0.0;
+	c2->Sn[i] = 1.0f;
+    c2->hpf_states[0] = c2->hpf_states[1] = 0.0f;
     for(i=0; i<2*n_samp; i++)
-	c2->Sn_[i] = 0;
+	c2->Sn_[i] = 0.0f;
     c2->fft_fwd_cfg = codec2_fft_alloc(FFT_ENC, 0, NULL, NULL);
     c2->fftr_fwd_cfg = codec2_fftr_alloc(FFT_ENC, 0, NULL, NULL);
     make_analysis_window(&c2->c2const, c2->fft_fwd_cfg, c2->w,c2->W);
     make_synthesis_window(&c2->c2const, c2->Pn);
     c2->fftr_inv_cfg = codec2_fftr_alloc(FFT_DEC, 1, NULL, NULL);
     c2->prev_f0_enc = 1/P_MAX_S;
-    c2->bg_est = 0.0;
-    c2->ex_phase = 0.0;
+    c2->bg_est = 0.0f;
+    c2->ex_phase = 0.0f;
 
     for(l=1; l<=MAX_AMP; l++)
-	c2->prev_model_dec.A[l] = 0.0;
+	c2->prev_model_dec.A[l] = 0.0f;
     c2->prev_model_dec.Wo = TWO_PI/c2->c2const.p_max;
     c2->prev_model_dec.L = PI/c2->prev_model_dec.Wo;
     c2->prev_model_dec.voiced = 0;
@@ -200,18 +203,18 @@ struct CODEC2 * codec2_create(int mode)
 
     c2->lpc_pf = 1; c2->bass_boost = 1; c2->beta = LPCPF_BETA; c2->gamma = LPCPF_GAMMA;
 
-    c2->xq_enc[0] = c2->xq_enc[1] = 0.0;
-    c2->xq_dec[0] = c2->xq_dec[1] = 0.0;
+    c2->xq_enc[0] = c2->xq_enc[1] = 0.0f;
+    c2->xq_dec[0] = c2->xq_dec[1] = 0.0f;
 
     c2->smoothing = 0;
-    c2->se = 0.0; c2->nse = 0;
+    c2->se = 0.0f; c2->nse = 0;
     c2->user_rate_K_vec_no_mean_ = NULL;
     c2->post_filter_en = true;
     
     c2->bpf_buf = (float*)MALLOC(sizeof(float)*(BPF_N+4*c2->n_samp));
     assert(c2->bpf_buf != NULL);
     for(i=0; i<BPF_N+4*c2->n_samp; i++)
-        c2->bpf_buf[i] = 0.0;
+        c2->bpf_buf[i] = 0.0f;
 
     c2->softdec = NULL;
     c2->gray = 1;
@@ -222,11 +225,11 @@ struct CODEC2 * codec2_create(int mode)
         mel_sample_freqs_kHz(c2->rate_K_sample_freqs_kHz, NEWAMP1_K, ftomel(200.0), ftomel(3700.0) );
         int k;
         for(k=0; k<NEWAMP1_K; k++) {
-            c2->prev_rate_K_vec_[k] = 0.0;
-            c2->eq[k] = 0.0;
+            c2->prev_rate_K_vec_[k] = 0.0f;
+            c2->eq[k] = 0.0f;
         }
         c2->eq_en = false;
-        c2->Wo_left = 0.0;
+        c2->Wo_left = 0.0f;
         c2->voicing_left = 0;;
         c2->phase_fft_fwd_cfg = codec2_fft_alloc(NEWAMP1_PHASE_NFFT, 0, NULL, NULL);
         c2->phase_fft_inv_cfg = codec2_fft_alloc(NEWAMP1_PHASE_NFFT, 1, NULL, NULL);
@@ -238,9 +241,9 @@ struct CODEC2 * codec2_create(int mode)
         n2_mel_sample_freqs_kHz(c2->n2_rate_K_sample_freqs_kHz, NEWAMP2_K);
         int k;
         for(k=0; k<NEWAMP2_K; k++) {
-            c2->n2_prev_rate_K_vec_[k] = 0.0;
+            c2->n2_prev_rate_K_vec_[k] = 0.0f;
         }
-        c2->Wo_left = 0.0;
+        c2->Wo_left = 0.0f;
         c2->voicing_left = 0;;
         c2->phase_fft_fwd_cfg = codec2_fft_alloc(NEWAMP2_PHASE_NFFT, 0, NULL, NULL);
         c2->phase_fft_inv_cfg = codec2_fft_alloc(NEWAMP2_PHASE_NFFT, 1, NULL, NULL);
@@ -251,15 +254,17 @@ struct CODEC2 * codec2_create(int mode)
         n2_mel_sample_freqs_kHz(c2->n2_pwb_rate_K_sample_freqs_kHz, NEWAMP2_16K_K);
         int k;
         for(k=0; k<NEWAMP2_16K_K; k++) {
-            c2->n2_pwb_prev_rate_K_vec_[k] = 0.0;
+            c2->n2_pwb_prev_rate_K_vec_[k] = 0.0f;
         }
-        c2->Wo_left = 0.0;
+        c2->Wo_left = 0.0f;
         c2->voicing_left = 0;;
         c2->phase_fft_fwd_cfg = codec2_fft_alloc(NEWAMP2_PHASE_NFFT, 0, NULL, NULL);
         c2->phase_fft_inv_cfg = codec2_fft_alloc(NEWAMP2_PHASE_NFFT, 1, NULL, NULL);
     }
 
+#ifndef __EMBEDDED__
     c2->fmlfeat = NULL; c2->fmlmodel = NULL;
+#endif
 
     // make sure that one of the two decode function pointers is empty
     // for the encode function pointer this is not required since we always set it
@@ -268,9 +273,10 @@ struct CODEC2 * codec2_create(int mode)
     c2->decode = NULL;
     c2->decode_ber = NULL;
 
-    if ( CODEC2_MODE_ACTIVE(CODEC2_MODE_3200, c2->mode))
+
+    if ( CODEC2_MODE_ACTIVE(CODEC2_MODE_3200, c2->mode) )
     {
-	c2->encode = codec2_encode_3200;
+        c2->encode = codec2_encode_3200;
 	c2->decode = codec2_decode_3200;
     }
 
@@ -323,7 +329,6 @@ struct CODEC2 * codec2_create(int mode)
 	c2->decode = codec2_decode_450pwb;
     }
 
-    
     return c2;
 }
 
@@ -463,6 +468,7 @@ void codec2_encode(struct CODEC2 *c2, unsigned char *bytes, const short speech[]
     assert(c2 != NULL);
     assert(c2->encode != NULL);
 
+    //codec2_encode_3200(c2, bytes, speech);
     c2->encode(c2, bytes, speech);
 
 }
@@ -594,7 +600,7 @@ void codec2_decode_3200(struct CODEC2 *c2, short speech[], const unsigned char *
 
     for(i=0; i<2; i++)
 	for(j=1; j<=MAX_AMP; j++)
-	    model[i].A[j] = 0.0;
+	    model[i].A[j] = 0.0f;
 
     /* unpack bits from channel ------------------------------------*/
 
@@ -740,7 +746,7 @@ void codec2_decode_2400(struct CODEC2 *c2, short speech[], const unsigned char *
 
     for(i=0; i<2; i++)
 	for(j=1; j<=MAX_AMP; j++)
-	    model[i].A[j] = 0.0;
+	    model[i].A[j] = 0.0f;
 
     /* unpack bits from channel ------------------------------------*/
 
@@ -780,8 +786,9 @@ void codec2_decode_2400(struct CODEC2 *c2, short speech[], const unsigned char *
 	synthesise_one_frame(c2, &speech[c2->n_samp*i], &model[i], Aw, 1.0);
 
 	/* dump parameters for deep learning experiments */
-	
-	if (c2->fmlfeat != NULL) {
+
+#ifndef __EMBEDDED__
+    if (c2->fmlfeat != NULL) {
 	    /* 10 LSPs - energy - Wo - voicing flag - 10 LPCs */                
 	    fwrite(&lsps[i][0], LPC_ORD, sizeof(float), c2->fmlfeat);
 	    fwrite(&e[i], 1, sizeof(float), c2->fmlfeat);
@@ -790,6 +797,8 @@ void codec2_decode_2400(struct CODEC2 *c2, short speech[], const unsigned char *
 	    fwrite(&voiced_float, 1, sizeof(float), c2->fmlfeat);
 	    fwrite(&ak[i][1], LPC_ORD, sizeof(float), c2->fmlfeat);
 	}
+#endif
+
     }
 
     /* update memories for next frame ----------------------------*/
@@ -918,7 +927,7 @@ void codec2_decode_1600(struct CODEC2 *c2, short speech[], const unsigned char *
 
     for(i=0; i<4; i++)
 	for(j=1; j<=MAX_AMP; j++)
-	    model[i].A[j] = 0.0;
+	    model[i].A[j] = 0.0f;
 
     /* unpack bits from channel ------------------------------------*/
 
@@ -1096,7 +1105,7 @@ void codec2_decode_1400(struct CODEC2 *c2, short speech[], const unsigned char *
 
     for(i=0; i<4; i++)
 	for(j=1; j<=MAX_AMP; j++)
-	    model[i].A[j] = 0.0;
+	    model[i].A[j] = 0.0f;
 
     /* unpack bits from channel ------------------------------------*/
 
@@ -1264,7 +1273,7 @@ void codec2_decode_1300(struct CODEC2 *c2, short speech[], const unsigned char *
 
     for(i=0; i<4; i++)
 	for(j=1; j<=MAX_AMP; j++)
-	    model[i].A[j] = 0.0;
+	    model[i].A[j] = 0.0f;
 
     /* unpack bits from channel ------------------------------------*/
 
@@ -1317,17 +1326,6 @@ void codec2_decode_1300(struct CODEC2 *c2, short speech[], const unsigned char *
 	apply_lpc_correction(&model[i]);
 	synthesise_one_frame(c2, &speech[c2->n_samp*i], &model[i], Aw, 1.0);
 
-	/* dump parameters for deep learning experiments */
-	
-	if (c2->fmlfeat != NULL) {
-	    /* 10 LSPs - energy - Wo - voicing flag - 10 LPCs */                
-	    fwrite(&lsps[i][0], LPC_ORD, sizeof(float), c2->fmlfeat);
-	    fwrite(&e[i], 1, sizeof(float), c2->fmlfeat);
-	    fwrite(&model[i].Wo, 1, sizeof(float), c2->fmlfeat); 
-	    float voiced_float = model[i].voiced;
-	    fwrite(&voiced_float, 1, sizeof(float), c2->fmlfeat);
-	    fwrite(&ak[i][1], LPC_ORD, sizeof(float), c2->fmlfeat);
-	}
     }
  
     #ifdef DUMP
@@ -1460,7 +1458,7 @@ void codec2_decode_1200(struct CODEC2 *c2, short speech[], const unsigned char *
 
     for(i=0; i<4; i++)
 	for(j=1; j<=MAX_AMP; j++)
-	    model[i].A[j] = 0.0;
+	    model[i].A[j] = 0.0f;
 
     /* unpack bits from channel ------------------------------------*/
 
@@ -1580,7 +1578,7 @@ void codec2_encode_700c(struct CODEC2 *c2, unsigned char * bits, const short spe
                              rate_K_vec_no_mean_, &c2->se, c2->eq, c2->eq_en);
     c2->nse += K;
 
-#ifndef CORTEX_M4
+#ifndef __EMBEDDED__
     /* dump features for deep learning experiments */
     if (c2->fmlfeat != NULL) {
         fwrite(&mean, 1, sizeof(float), c2->fmlfeat);
@@ -1653,18 +1651,20 @@ void codec2_decode_700c(struct CODEC2 *c2, short speech[], const unsigned char *
 
 
    for(i=0; i<M; i++) {
+#ifndef __EMBEDDED__
        if (c2->fmlfeat != NULL) {
 	   /* We use standard nb_features=55 feature records for compatibility with train_lpcnet.py */
 	   float features[55] = {0};
 	   /* just using 18/20 for compatibility with LPCNet, coarse scaling for NN input */
 	   for(int j=0; j<18; j++)
 	       features[j] = (interpolated_surface_[i][j]-30)/40;
-	   int pitch_index = 21 + 2.0*M_PI/model[i].Wo;
+	   int pitch_index = 21 + 2.0f*M_PI/model[i].Wo;
 	   features[36] = 0.02*(pitch_index-100);
 	   features[37] = model[i].voiced;
-	   fwrite(features, 55, sizeof(float), c2->fmlfeat);
+           fwrite(features, 55, sizeof(float), c2->fmlfeat);
        }
-       
+#endif
+
        /* 700C is a little quieter so lets apply some experimentally derived audio gain */
        synthesise_one_frame(c2, &speech[c2->n_samp*i], &model[i], &HH[i][0], 1.5);
    }
@@ -1851,7 +1851,7 @@ void codec2_encode_450(struct CODEC2 *c2, unsigned char * bits, const short spee
         for(h = 0;h<(model.L);h++){
 			//only detect above 300 Hz
 			if(h*model.Wo*(c2->c2const.Fs/2000.0)/M_PI > 0.3){
-				energydelta[i] = (double)energydelta[i] + (double)20.0*log10(model.A[10]+1E-16);
+				energydelta[i] = (double)energydelta[i] + (double)20.0f*log10f(model.A[10]+1E-16);
 				spectralCounter = spectralCounter+1;
 			}
 				
@@ -2099,9 +2099,11 @@ void analyse_one_frame(struct CODEC2 *c2, MODEL *model, const short speech[])
     two_stage_pitch_refinement(&c2->c2const, model, Sw);
 
     /* estimate phases when doing ML experiments */
+#ifndef __EMBEDDED__
     if (c2->fmlfeat != NULL)
 	estimate_amplitudes(model, Sw, c2->W, 1);
     else
+#endif
 	estimate_amplitudes(model, Sw, c2->W, 0);
     est_voicing_mbe(&c2->c2const, model, Sw, c2->W);
     #ifdef DUMP
@@ -2128,21 +2130,21 @@ static void ear_protection(float in_out[], int n) {
 
     /* find maximum sample in frame */
 
-    max_sample = 0.0;
+    max_sample = 0.0f;
     for(i=0; i<n; i++)
         if (in_out[i] > max_sample)
             max_sample = in_out[i];
 
     /* determine how far above set point */
 
-    over = max_sample/30000.0;
+    over = max_sample/30000.0f;
 
     /* If we are x dB over set point we reduce level by 2x dB, this
        attenuates major excursions in amplitude (likely to be caused
        by bit errors) more than smaller ones */
 
     if (over > 1.0) {
-        gain = 1.0/(over*over);
+        gain = 1.0f/(over*over);
         for(i=0; i<n; i++)
             in_out[i] *= gain;
     }
@@ -2251,16 +2253,18 @@ void codec2_set_softdec(struct CODEC2 *c2, float *softdec)
 }
 
 void codec2_open_mlfeat(struct CODEC2 *codec2_state, char *feat_fn, char *model_fn) {
+#ifndef __EMBEDDED__
     if ((codec2_state->fmlfeat = fopen(feat_fn, "wb")) == NULL) {
 	fprintf(stderr, "error opening machine learning feature file: %s\n", feat_fn);
 	exit(1);
     }    
     if (model_fn) {
-	if ((codec2_state->fmlmodel = fopen(model_fn, "wb")) == NULL) {
+        if ((codec2_state->fmlmodel = fopen(model_fn, "wb")) == NULL) {
 	fprintf(stderr, "error opening machine learning Codec 2 model file: %s\n", feat_fn);
 	exit(1);
 	}
     }
+#endif
 }
 
 #ifndef __EMBEDDED__
@@ -2290,11 +2294,14 @@ float codec2_get_var(struct CODEC2 *codec2_state) {
         return 0;
 }
 
+#ifndef __EMBEDDED__
 float *codec2_enable_user_ratek(struct CODEC2 *codec2_state, int *K) {
     codec2_state->user_rate_K_vec_no_mean_ = (float*)malloc(sizeof(float)*NEWAMP1_K);
     *K = NEWAMP1_K;
     return codec2_state->user_rate_K_vec_no_mean_;
 }
+#endif
+
 
 void codec2_700c_post_filter(struct CODEC2 *codec2_state, bool en) {
     codec2_state->post_filter_en = en;
@@ -2302,5 +2309,5 @@ void codec2_700c_post_filter(struct CODEC2 *codec2_state, bool en) {
 
 void codec2_700c_eq(struct CODEC2 *codec2_state, bool en) {
     codec2_state->eq_en = en;
-    codec2_state->se = 0.0; codec2_state->nse = 0;
+    codec2_state->se = 0.0f; codec2_state->nse = 0;
 }

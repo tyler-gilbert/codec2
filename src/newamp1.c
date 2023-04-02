@@ -92,7 +92,7 @@ void interp_para(float y[], float xp[], float yp[], int np, float x[], int n)
 \*---------------------------------------------------------------------------*/
 
 float ftomel(float fHz) {
-    float mel = floorf(2595.0*log10f(1.0 + fHz/700.0)+0.5);
+    float mel = floorf(2595.0f*log10f(1.0 + fHz/700.0)+0.5f);
     return mel;
 }
 
@@ -127,9 +127,9 @@ void resample_const_rate_f(C2CONST *c2const, MODEL *model, float rate_K_vec[], f
 
     /* convert rate L=pi/Wo amplitude samples to fixed rate K */
 
-    AmdB_peak = -100.0;
+    AmdB_peak = -100.0f;
     for(m=1; m<=model->L; m++) {
-        AmdB[m] = 20.0*log10f(model->A[m]+1E-16);
+        AmdB[m] = 20.0f*log10f(model->A[m]+1E-16);
         if (AmdB[m] > AmdB_peak) {
             AmdB_peak = AmdB[m];
         }
@@ -141,7 +141,7 @@ void resample_const_rate_f(C2CONST *c2const, MODEL *model, float rate_K_vec[], f
 
     for(m=1; m<=model->L; m++) {
         if (AmdB[m] < (AmdB_peak-50.0)) {
-            AmdB[m] = AmdB_peak-50.0;
+            AmdB[m] = AmdB_peak-50.0f;
         }
     }
 
@@ -193,7 +193,7 @@ float rate_K_mbest_encode(int *indexes, float *x, float *xq, int ndim, int mbest
 
   n1 = mbest_stage2->list[0].index[1];
   n2 = mbest_stage2->list[0].index[0];
-  mse = 0.0;
+  mse = 0.0f;
   for (i=0;i<ndim;i++) {
       tmp = codebook1[ndim*n1+i] + codebook2[ndim*n2+i];
       mse += (x[i]-tmp)*(x[i]-tmp);
@@ -236,10 +236,10 @@ void post_filter_newamp1(float vec[], float sample_freq_kHz[], int K, float pf_g
     */
     
     float pre[K];
-    float e_before = 0.0;
-    float e_after = 0.0;
+    float e_before = 0.0f;
+    float e_after = 0.0f;
     for(k=0; k<K; k++) {
-        pre[k] = 20.0*log10f(sample_freq_kHz[k]/0.3);
+        pre[k] = 20.0f*log10f(sample_freq_kHz[k]/0.3);
         vec[k] += pre[k];
         e_before += POW10F(vec[k]/10.0);
         vec[k] *= pf_gain;
@@ -277,24 +277,24 @@ void interp_Wo_v(float Wo_[], int L_[], int voicing_[], float Wo1, float Wo2, in
 
     if (!voicing1 && !voicing2) {
         for(i=0; i<M; i++)
-            Wo_[i] = 2.0*M_PI/100.0;
+            Wo_[i] = 2.0f*M_PI/100.0f;
     }
 
     if (voicing1 && !voicing2) {
        Wo_[0] = Wo_[1] = Wo1;
-       Wo_[2] = Wo_[3] = 2.0*M_PI/100.0;
+       Wo_[2] = Wo_[3] = 2.0f*M_PI/100.0f;
        voicing_[0] = voicing_[1] = 1;
     }
 
     if (!voicing1 && voicing2) {
-       Wo_[0] = Wo_[1] = 2.0*M_PI/100.0;
+       Wo_[0] = Wo_[1] = 2.0f*M_PI/100.0f;
        Wo_[2] = Wo_[3] = Wo2;
        voicing_[2] = voicing_[3] = 1;
     }
 
     if (voicing1 && voicing2) {
         float c;
-        for(i=0,c=1.0; i<M; i++,c-=1.0/M) {
+        for(i=0,c=1.0f; i<M; i++,c-=1.0f/M) {
             Wo_[i] = Wo1*c + Wo2*(1.0-c);
             voicing_[i] = 1;
         }
@@ -324,9 +324,9 @@ void resample_rate_L(C2CONST *c2const, MODEL *model, float rate_K_vec[], float r
 
    /* terminate either end of the rate K vecs with 0dB points */
 
-   rate_K_vec_term[0] = rate_K_vec_term[K+1] = 0.0;
-   rate_K_sample_freqs_kHz_term[0] = 0.0;
-   rate_K_sample_freqs_kHz_term[K+1] = 4.0;
+   rate_K_vec_term[0] = rate_K_vec_term[K+1] = 0.0f;
+   rate_K_sample_freqs_kHz_term[0] = 0.0f;
+   rate_K_sample_freqs_kHz_term[K+1] = 4.0f;
 
    for(k=0; k<K; k++) {
        rate_K_vec_term[k+1] = rate_K_vec[k];
@@ -366,7 +366,7 @@ void determine_phase(C2CONST *c2const, COMP H[], MODEL *model, int Nfft, codec2_
 
     for(m=1; m<=model->L; m++) {
         assert(model->A[m] != 0.0);
-        AmdB[m] = 20.0*log10f(model->A[m]);
+        AmdB[m] = 20.0f*log10f(model->A[m]);
         rate_L_sample_freqs_kHz[m] = (float)m*model->Wo*(c2const->Fs/2000.0)/M_PI;        
     }
     
@@ -378,7 +378,7 @@ void determine_phase(C2CONST *c2const, COMP H[], MODEL *model, int Nfft, codec2_
     mag_to_phase(phase, Gdbfk, Nfft, fwd_cfg, inv_cfg);
 
     for(m=1; m<=model->L; m++) {
-        b = floorf(0.5+m*model->Wo*Nfft/(2.0*M_PI));
+        b = floorf(0.5+m*model->Wo*Nfft/(2.0f*M_PI));
         H[m].real = cosf(phase[b]); H[m].imag = sinf(phase[b]);
     }
 }
@@ -404,7 +404,7 @@ void determine_autoc(C2CONST *c2const, float Rk[], int order, MODEL *model, int 
     /* interpolate in the log domain */
     for(m=1; m<=model->L; m++) {
         assert(model->A[m] != 0.0);
-        AmdB[m] = 20.0*log10f(model->A[m]);
+        AmdB[m] = 20.0f*log10f(model->A[m]);
         rate_L_sample_freqs_kHz[m] = (float)m*model->Wo*(c2const->Fs/2000.0)/M_PI;        
     }
     
@@ -417,11 +417,11 @@ void determine_autoc(C2CONST *c2const, float Rk[], int order, MODEL *model, int 
     COMP S[Nfft], R[Nfft];
 
     /* install negative frequency components, convert to mag squared of spectrum */
-    S[0].real = pow(10.0, Gdbfk[0]/10.0);
-    S[0].imag = 0.0;
+    S[0].real = powf(10.0, Gdbfk[0]/10.0);
+    S[0].imag = 0.0f;
     for(i=1; i<Ns; i++) {
-	S[i].real = S[Nfft-i].real = pow(10.0, Gdbfk[i]/10.0);
-	S[i].imag = S[Nfft-i].imag = 0.0;
+	S[i].real = S[Nfft-i].real = powf(10.0, Gdbfk[i]/10.0);
+	S[i].imag = S[Nfft-i].imag = 0.0f;
     }
 
     /* IDFT of mag squared is autocorrelation function */
@@ -439,7 +439,7 @@ void newamp1_eq(float rate_K_vec_no_mean[], float eq[], int K, int eq_en) {
     for(int k=0; k<K; k++) {
         update = rate_K_vec_no_mean[k] - ideal[k];
         eq[k] = (1.0-gain)*eq[k] + gain*update;
-        if (eq[k] < 0.0) eq[k] = 0.0;
+        if (eq[k] < 0.0) eq[k] = 0.0f;
         if (eq_en)
             rate_K_vec_no_mean[k] -= eq[k];
     }
@@ -476,7 +476,7 @@ void newamp1_model_to_indexes(C2CONST *c2const,
     resample_const_rate_f(c2const, model, rate_K_vec, rate_K_sample_freqs_kHz, K);
 
     /* remove mean */
-    float sum = 0.0;
+    float sum = 0.0f;
     for(k=0; k<K; k++)
         sum += rate_K_vec[k];   
     *mean = sum/K;
@@ -491,7 +491,7 @@ void newamp1_model_to_indexes(C2CONST *c2const,
 
     /* running sum of squared error for variance calculation */
     for(k=0; k<K; k++)
-        *se += (float)pow(rate_K_vec_no_mean[k]-rate_K_vec_no_mean_[k],2.0);
+        *se += (float)powf(rate_K_vec_no_mean[k]-rate_K_vec_no_mean_[k],2.0);
 
     /* scalar quantise mean (effectively the frame energy) */
     float w[1] = {1.0};
@@ -534,7 +534,7 @@ void newamp1_interpolate(float interpolated_surface_[], float left_vec[], float 
 
     /* (linearly) interpolate 25Hz amplitude vectors back to 100Hz */
 
-    for(i=0,c=1.0; i<M; i++,c-=1.0/M) {
+    for(i=0,c=1.0f; i<M; i++,c-=1.0f/M) {
         for(k=0; k<K; k++) {
             interpolated_surface_[i*K+k] = left_vec[k]*c + right_vec[k]*(1.0-c);
         }
@@ -637,7 +637,7 @@ void newamp1_indexes_to_model(C2CONST *c2const,
         voicing_right = 1;
     }
     else {
-        Wo_right  = 2.0*M_PI/100.0;
+        Wo_right  = 2.0f*M_PI/100.0f;
         voicing_right = 0;
     }
 

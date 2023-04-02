@@ -44,22 +44,22 @@ int main(int argc, char *argv[]) {
     
     /* set up small freq offset */
     float foff_hz = 25;
-    COMP phase_ch; phase_ch.real = 1.0; phase_ch.imag = 0.0;
+    COMP phase_ch; phase_ch.real = 1.0f; phase_ch.imag = 0.0f;
 
     /* set complex sine wave interferer at -fc */
     COMP interferer_phase = {1.0,0.0};
     COMP interferer_freq;
-    interferer_freq.real = cos(2.0*M_PI*freedv->ofdm->tx_centre/FREEDV_FS_8000);
-    interferer_freq.imag = sin(2.0*M_PI*freedv->ofdm->tx_centre/FREEDV_FS_8000);
+    interferer_freq.real = cosf(2.0f*M_PI*freedv->ofdm->tx_centre/FREEDV_FS_8000);
+    interferer_freq.imag = sin(2.0f*M_PI*freedv->ofdm->tx_centre/FREEDV_FS_8000);
     interferer_freq = cconj(interferer_freq);
 
     /* log a file of demod input samples for plotting in Octave */
     FILE *fdemod = fopen("demod.f32","wb"); assert(fdemod != NULL);
 
     /* measure demod input power, interferer input power */
-    float power_d = 0.0; float power_interferer = 0.0; 
+    float power_d = 0.0f; float power_interferer = 0.0f;
 
-    int frames = 0, sum_sync = 0, frames_snr = 0; float sum_snr = 0.0;
+    int frames = 0, sum_sync = 0, frames_snr = 0; float sum_snr = 0.0f;
     size_t nin, nout;
     nin = freedv_nin(freedv);
 
@@ -79,7 +79,7 @@ int main(int argc, char *argv[]) {
                above */
             fdmdv_freq_shift_coh(demod_in_comp, demod_in_comp, foff_hz, FREEDV_FS_8000, &phase_ch, nin);
             for(int i=0; i<nin; i++)
-                demod_in_comp[i].imag = 0.0;
+                demod_in_comp[i].imag = 0.0f;
         }
     
         if (test_num == 2) {
@@ -115,7 +115,7 @@ int main(int argc, char *argv[]) {
     freedv_close(freedv);
 
     if (test_num == 2)
-        fprintf(stderr, "Demod/Interferer power ratio: %3.2f dB\n", 10*log10(power_d/power_interferer));
+        fprintf(stderr, "Demod/Interferer power ratio: %3.2f dB\n", 10*log10f(power_d/power_interferer));
     float snr_av = sum_snr/frames_snr;
     fprintf(stderr, "frames: %d sum_sync: %d snr_av: %3.2f dB\n", frames, sum_sync, snr_av);
 

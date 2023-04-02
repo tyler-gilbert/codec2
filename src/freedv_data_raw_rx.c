@@ -59,7 +59,7 @@ int main(int argc, char *argv[]) {
     FILE                      *foct = NULL;
     int                        quiet = 0;
     int                        single_line_summary = 0;
-    float                      snr_sum = 0.0;
+    float                      snr_sum = 0.0f;
     
     if (argc < 3) {
     helpmsg:

@@ -54,7 +54,7 @@ extern int adc_overflow2;
 int main(void){
     short  buf[N];
     #ifdef TEST_TONE
-    float  phase = 0.0;
+    float  phase = 0.0f;
     float  sam;
     int    i;
     #endif
@@ -71,9 +71,9 @@ int main(void){
 
         #ifdef TEST_TONE
         for(i=0; i<N; i++) {
-            phase += 2.0*M_PI*FREQ/FS;
-            phase -= 2.0*M_PI*floor(phase/(2.0*M_PI));
-            sam = AMP*cos(phase);
+            phase += 2.0f*M_PI*FREQ/FS;
+            phase -= 2.0f*M_PI*floor(phase/(2.0f*M_PI));
+            sam = AMP*cosf(phase);
             buf[i] = (short)sam;
         }
         #endif

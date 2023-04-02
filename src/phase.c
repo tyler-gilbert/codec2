@@ -60,7 +60,7 @@ void sample_phase(MODEL *model,
     /* Sample phase at harmonics */
 
     for(m=1; m<=model->L; m++) {
-        b = (int)(m*model->Wo/r + 0.5);
+        b = (int)(m*model->Wo/r + 0.5f);
         H[m] = cconj(A[b]);      /* synth filter 1/A is opposite phase to analysis filter */
     }
 }
@@ -87,7 +87,7 @@ void sample_phase(MODEL *model,
    sinsusoids:
 
      for(m=1; m<=L; m++)
-       ex[n] = cos(m*Wo*n)
+       ex[n] = cosf(m*Wo*n)
 
    Note: the Octave script ../octave/phase.m is an example of this if
    you would like to try making a pulse train.
@@ -180,7 +180,7 @@ void phase_synth_zero_order(
     */
 
     ex_phase[0] += (model->Wo)*n_samp;
-    ex_phase[0] -= TWO_PI*floorf(ex_phase[0]/TWO_PI + 0.5);
+    ex_phase[0] -= TWO_PI*floorf(ex_phase[0]/TWO_PI + 0.5f);
 
     for(m=1; m<=model->L; m++) {
 
@@ -209,7 +209,7 @@ void phase_synth_zero_order(
 
         /* modify sinusoidal phase */
 
-        new_phi = atan2f(A_[m].imag, A_[m].real+1E-12);
+        new_phi = atan2f(A_[m].imag, A_[m].real+1E-12f);
         model->phi[m] = new_phi;
     }
 
@@ -245,10 +245,10 @@ void mag_to_phase(float phase[],             /* Nfft/2+1 output phase samples in
        account kiss fft lack of scaling on ifft */
 
     Sdb[0].real = Gdbfk[0];
-    Sdb[0].imag = 0.0;
+    Sdb[0].imag = 0.0f;
     for(i=1; i<Ns; i++) {
         Sdb[i].real = Sdb[Nfft-i].real = Gdbfk[i];
-        Sdb[i].imag = Sdb[Nfft-i].imag = 0.0;
+        Sdb[i].imag = Sdb[Nfft-i].imag = 0.0f;
     }
 
     /* compute real cepstrum from log magnitude spectrum */
@@ -267,19 +267,19 @@ void mag_to_phase(float phase[],             /* Nfft/2+1 output phase samples in
     }
     cf[Ns-1] = c[Ns-1];
     for(i=Ns; i<Nfft; i++) {
-        cf[i].real = 0.0;
-        cf[i].imag = 0.0;
+        cf[i].real = 0.0f;
+        cf[i].imag = 0.0f;
     }
 
     /* Cf = dB_magnitude + j * minimum_phase */
 
     codec2_fft(fft_fwd_cfg, cf, Cf);
 
-    /*  The maths says we are meant to be using log(x), not 20*log10(x),
+    /*  The maths says we are meant to be using logf(x), not 20*log10f(x),
         so we need to scale the phase to account for this:
-        log(x) = 20*log10(x)/scale */
+        logf(x) = 20*log10f(x)/scale */
                           
-    float scale = (20.0/logf(10.0));
+    float scale = (20.0f/logf(10.0));
     
     for(i=0; i<Ns; i++) {
         phase[i] = Cf[i].imag/scale;

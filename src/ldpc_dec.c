@@ -169,7 +169,7 @@ int main(int argc, char *argv[])
             for(i=0; i<data_bits_per_frame-unused_data_bits; i++)
                 llr_tmp[i] = llr[i];  // rx data bits
             for(i=data_bits_per_frame-unused_data_bits; i<data_bits_per_frame; i++)
-                llr_tmp[i] = -10.0;           // known data bits high likelhood
+                llr_tmp[i] = -10.0f;           // known data bits high likelhood
             for(i=data_bits_per_frame; i<CodeLength; i++)
                 llr_tmp[i] = llr[i-unused_data_bits];  // rx parity bits
             memcpy(input_float, llr_tmp, sizeof(float)*CodeLength);                

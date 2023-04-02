@@ -71,13 +71,13 @@ unsigned int machdep_profile_sample(void) {
 
 /* log to a buffer, we only call printf after timing finished as it is slow */
 
-unsigned int machdep_profile_sample_and_log(unsigned int start, char s[])
+unsigned int machdep_profile_sample_and_logf(unsigned int start, char s[])
 {
     char  tmp[80];
     float msec;
 
     unsigned int dwt = *DWT_CYCCNT - start;
-    msec = 1000.0*(float)dwt/CORE_CLOCK;
+    msec = 1000.0f*(float)dwt/CORE_CLOCK;
     snprintf(tmp, sizeof(tmp), "%s %5.2f msecs\n",s,(double)msec);
     if ((strlen(buf) + strlen(tmp)) < BUF_SZ)
         strncat(buf, tmp, sizeof(buf)-1);

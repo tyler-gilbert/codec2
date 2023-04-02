@@ -44,9 +44,9 @@
 
 \*---------------------------------------------------------------------------*/
 
-#define BG_THRESH 40.0     /* only consider low levels signals for bg_est */
-#define BG_BETA    0.1     /* averaging filter constant                   */
-#define BG_MARGIN  6.0     /* harmonics this far above BG noise are
+#define BG_THRESH 40.0f     /* only consider low levels signals for bg_est */
+#define BG_BETA    0.1f     /* averaging filter constant                   */
+#define BG_MARGIN  6.0f     /* harmonics this far above BG noise are
 			      randomised.  Helped make bg noise less
 			      spikey (impulsive) for mmt1, but speech was
                               perhaps a little rougher.
@@ -108,26 +108,26 @@ void postfilter(
 
   /* determine average energy across spectrum */
 
-  e = 1E-12;
+  e = 1E-12f;
   for(m=1; m<=model->L; m++)
       e += model->A[m]*model->A[m];
 
-  assert(e > 0.0);
-  e = 10.0*log10f(e/model->L);
+  assert(e > 0.0f);
+  e = 10.0f*log10f(e/model->L);
 
   /* If beneath threshold, update bg estimate.  The idea
      of the threshold is to prevent updating during high level
      speech. */
 
   if ((e < BG_THRESH) && !model->voiced)
-      *bg_est =  *bg_est*(1.0 - BG_BETA) + e*BG_BETA;
+      *bg_est =  *bg_est*(1.0f - BG_BETA) + e*BG_BETA;
 
   /* now mess with phases during voiced frames to make any harmonics
      less then our background estimate unvoiced.
   */
 
   uv = 0;
-  thresh = POW10F((*bg_est + BG_MARGIN)/20.0);
+  thresh = POW10F((*bg_est + BG_MARGIN)/20.0f);
   if (model->voiced)
       for(m=1; m<=model->L; m++)
 	  if (model->A[m] < thresh) {
@@ -136,7 +136,7 @@ void postfilter(
 	  }
 
 #ifdef DUMP
-  dump_bg(e, *bg_est, 100.0*uv/model->L);
+  dump_bg(e, *bg_est, 100.0f*uv/model->L);
 #endif
 
 }

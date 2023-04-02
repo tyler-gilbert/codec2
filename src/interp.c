@@ -74,7 +74,7 @@ void interpolate(
 
     if (interp->voiced) {
 	if (prev->voiced && next->voiced)
-	    interp->Wo = (prev->Wo + next->Wo)/2.0;
+	    interp->Wo = (prev->Wo + next->Wo)/2.0f;
 	if (!prev->voiced && next->voiced)
 	    interp->Wo = next->Wo;
 	if (prev->voiced && !next->voiced)
@@ -89,7 +89,7 @@ void interpolate(
 
     for(l=1; l<=interp->L; l++) {
 	w = l*interp->Wo;
-	log_amp = (sample_log_amp(prev, w) + sample_log_amp(next, w))/2.0;
+	log_amp = (sample_log_amp(prev, w) + sample_log_amp(next, w))/2.0f;
 	interp->A[l] = powf(10.0, log_amp);
     }
 }
@@ -114,7 +114,7 @@ float sample_log_amp(MODEL *model, float w)
 
     assert(w > 0.0); assert (w <= PI);
 
-    m = floorf(w/model->Wo + 0.5);
+    m = floorf(w/model->Wo + 0.5f);
     f = (w - m*model->Wo)/w;
     assert(f <= 1.0);
 
@@ -178,7 +178,7 @@ void interpolate_lsp(
 
     if (interp->voiced) {
 	if (prev->voiced && next->voiced)
-	    interp->Wo = (prev->Wo + next->Wo)/2.0;
+	    interp->Wo = (prev->Wo + next->Wo)/2.0f;
 	if (!prev->voiced && next->voiced)
 	    interp->Wo = next->Wo;
 	if (prev->voiced && !next->voiced)
@@ -196,7 +196,7 @@ void interpolate_lsp(
     /* interpolate LSPs */
 
     for(i=0; i<LPC_ORD; i++) {
-	lsps_interp[i] = (prev_lsps[i] + next_lsps[i])/2.0;
+	lsps_interp[i] = (prev_lsps[i] + next_lsps[i])/2.0f;
     }
 
     /* Interpolate LPC energy in log domain */
@@ -231,7 +231,7 @@ void interp_Wo(
   float  Wo_min
 	       )
 {
-    interp_Wo2(interp, prev, next, 0.5, Wo_min);
+    interp_Wo2(interp, prev, next, 0.5f, Wo_min);
 }
 
 /*---------------------------------------------------------------------------*\
@@ -262,7 +262,7 @@ void interp_Wo2(
 
     if (interp->voiced) {
 	if (prev->voiced && next->voiced)
-	    interp->Wo = (1.0 - weight)*prev->Wo + weight*next->Wo;
+	    interp->Wo = (1.0f - weight)*prev->Wo + weight*next->Wo;
 	if (!prev->voiced && next->voiced)
 	    interp->Wo = next->Wo;
 	if (prev->voiced && !next->voiced)
@@ -326,6 +326,6 @@ void interpolate_lsp_ver2(float interp[], float prev[],  float next[], float wei
     int i;
 
     for(i=0; i<order; i++)
-	interp[i] = (1.0 - weight)*prev[i] + weight*next[i];
+	interp[i] = (1.0f - weight)*prev[i] + weight*next[i];
 }
 

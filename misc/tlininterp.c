@@ -79,7 +79,7 @@ int main(int argc, char *argv[]) {
 
     for (i=0; i<channels; i++)
         left[i] = 0;
-    t = 0.0;
+    t = 0.0f;
     int j = 0;
     while(fread(&right, sizeof(short)*channels, 1, fin) == 1) {
         while (t < 1.0) {
@@ -127,10 +127,10 @@ int main(int argc, char *argv[]) {
                 j = 0;
             }
 
-            t += 1.0/oversample;
+            t += 1.0f/oversample;
         }
         
-        t -= 1.0;
+        t -= 1.0f;
         for (i=0; i<channels; i++)
             left[i] = right[i];
     }

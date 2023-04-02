@@ -98,7 +98,7 @@ int main(int argc, char *argv[]) {
     lspdt = switch_present("--lspdt", argc, argv);
 
     for(i=0; i<NW; i++)
-	Sn[i] = 0.0;
+	Sn[i] = 0.0f;
 
     /* Read SPC file, and determine aks[] for each frame ------------------*/
 
@@ -108,17 +108,17 @@ int main(int argc, char *argv[]) {
 
 	for(i=0; i<NW-N; i++)
 	    Sn[i] = Sn[i+N];
-	E = 0.0;
+	E = 0.0f;
 	for(i=0; i<N; i++) {
 	    Sn[i+NW-N] = buf[i];
 	    E += Sn[i]*Sn[i];
 	}
 
-	E = 0.0;
+	E = 0.0f;
 	for(i=0; i<NW; i++) {
 	    E += Sn[i]*Sn[i];
 	}
-	E = 10.0*log10(E/NW);
+	E = 10.0f*log10f(E/NW);
 
 	/* If energy high enough, include this frame */
 
@@ -132,11 +132,11 @@ int main(int argc, char *argv[]) {
 	    if (roots == P) {
 		if (lspd) {
 		    if (log) {
-			fprintf(flsp,"%f ",log10(lsp[0]));
+			fprintf(flsp,"%f ",log10f(lsp[0]));
 			for(i=1; i<P; i++) {
 			    diff = lsp[i]-lsp[i-1];
-			    if (diff < (PI/4000.0)*25.0) diff = (PI/4000.0)*25.0;
-			    fprintf(flsp,"%f ",log10(diff));
+			    if (diff < (PI/4000.0)*25.0) diff = (PI/4000.0)*25.0f;
+			    fprintf(flsp,"%f ",log10f(diff));
 			}
 		    }
 		    else {
@@ -157,7 +157,7 @@ int main(int argc, char *argv[]) {
 		else {
 		    if (log) {
 			for(i=0; i<P; i++)
-			    fprintf(flsp,"%f ",log10(lsp[i]));
+			    fprintf(flsp,"%f ",log10f(lsp[i]));
 			fprintf(flsp,"\n");
 		    }
 		    else {
@@ -174,7 +174,7 @@ int main(int argc, char *argv[]) {
 	}
     }
 
-    printf("%3.2f %% active frames\n", 100.0*(float)af/f);
+    printf("%3.2f %% active frames\n", 100.0f*(float)af/f);
     fclose(fspc);
     fclose(flsp);
 

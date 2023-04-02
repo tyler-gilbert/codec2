@@ -43,7 +43,7 @@ void modem_stats_open(struct MODEM_STATS *f)
 
 #ifndef __EMBEDDED__
     for(i=0; i<2*MODEM_STATS_NSPEC; i++)
-	f->fft_buf[i] = 0.0;
+	f->fft_buf[i] = 0.0f;
     f->fft_cfg = (void*)kiss_fft_alloc (2*MODEM_STATS_NSPEC, 0, NULL, NULL);
     assert(f->fft_cfg != NULL);
 #endif
@@ -104,20 +104,20 @@ void modem_stats_get_rx_spectrum(struct MODEM_STATS *f, float mag_spec_dB[], COM
     /* window and FFT */
 
     for(i=0; i<2*MODEM_STATS_NSPEC; i++) {
-	fft_in[i].real = f->fft_buf[i] * (0.5 - 0.5*cosf((float)i*2.0*M_PI/(2*MODEM_STATS_NSPEC)));
-	fft_in[i].imag = 0.0;
+	fft_in[i].real = f->fft_buf[i] * (0.5 - 0.5f*cosf((float)i*2.0f*M_PI/(2*MODEM_STATS_NSPEC)));
+	fft_in[i].imag = 0.0f;
     }
 
     kiss_fft((kiss_fft_cfg)f->fft_cfg, (kiss_fft_cpx *)fft_in, (kiss_fft_cpx *)fft_out);
 
     /* FFT scales up a signal of level 1 FDMDV_NSPEC */
 
-    full_scale_dB = 20*log10(MODEM_STATS_NSPEC*FDMDV_SCALE);
+    full_scale_dB = 20*log10f(MODEM_STATS_NSPEC*FDMDV_SCALE);
 
     /* scale and convert to dB */
 
     for(i=0; i<MODEM_STATS_NSPEC; i++) {
-	mag_spec_dB[i]  = 10.0*log10f(fft_out[i].real*fft_out[i].real + fft_out[i].imag*fft_out[i].imag + 1E-12);
+	mag_spec_dB[i]  = 10.0f*log10f(fft_out[i].real*fft_out[i].real + fft_out[i].imag*fft_out[i].imag + 1E-12);
 	mag_spec_dB[i] -= full_scale_dB;
     }
 }

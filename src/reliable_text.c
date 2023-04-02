@@ -188,7 +188,7 @@ static int reliable_text_ldpc_decode(reliable_text_impl_t* obj, char* dest)
         gp_deinterleave_comp ((COMP*)deinterleavedSyms, (COMP*)&obj->inbound_pending_syms[RELIABLE_TEXT_UW_LENGTH_BITS/2], Npayloadsymsperpacket);
         gp_deinterleave_float(deinterleavedAmps, &obj->inbound_pending_amps[RELIABLE_TEXT_UW_LENGTH_BITS/2], Npayloadsymsperpacket);
         
-        float EsNo = 3.0; // note: constant from freedv_700.c
+        float EsNo = 3.0f; // note: constant from freedv_700.c
         
         symbols_to_llrs(llr, (COMP*)deinterleavedSyms, deinterleavedAmps,
                         EsNo, obj->fdv->ofdm->mean_amp, Npayloadsymsperpacket);

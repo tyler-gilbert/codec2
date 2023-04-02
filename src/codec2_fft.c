@@ -93,7 +93,7 @@ codec2_fft_cfg codec2_fft_alloc(int nfft, int inverse_fft, void* mem, size_t* le
 //        retval->instance = &arm_cfft_sR_f32_len1024;
 //        break;
     default:
-        abort();
+        assert(1);
     }
     // retval->instance = arm_fft_cache_get(retval->instance);
 #endif

@@ -118,7 +118,7 @@ static float phi0(
   /* return( 8.1736e-003 ); */
   else {
     z = (float) exp(x);
-    return( (float) log( (z+1)/(z-1) ) );
+    return( (float) logf( (z+1)/(z-1) ) );
   }
 }
 #endif
@@ -572,14 +572,14 @@ void sd_to_llr(float llr[], float sd[], int n) {
 
     /* convert SD samples to LLRs -------------------------------*/
 
-    sum = 0.0;
+    sum = 0.0f;
     for(i=0; i<n; i++)
         sum += fabs(sd[i]);
     mean = sum/n;
 
     /* find variance from +/-1 symbol position */
 
-    sum = sumsq = 0.0;
+    sum = sumsq = 0.0f;
     for(i=0; i<n; i++) {
         sign = (sd[i] > 0.0L) - (sd[i] < 0.0L);
         x = ((double)sd[i]/mean - sign);
@@ -589,7 +589,7 @@ void sd_to_llr(float llr[], float sd[], int n) {
     estvar = (n * sumsq - sum * sum) / (n * (n - 1));
     //fprintf(stderr, "mean: %f var: %f\n", mean, estvar);
 
-    estEsN0 = 1.0/(2.0L * estvar + 1E-3);
+    estEsN0 = 1.0f/(2.0L * estvar + 1E-3);
     for(i=0; i<n; i++)
         llr[i] = 4.0L * estEsN0 * sd[i];
 }
@@ -755,7 +755,7 @@ static void FskDemod(float out[], float yr[], float v_est, float SNR, int M, int
     scale_factor = 2*SNR;
     for (i=0;i<number_symbols;i++) {
         for (j=0;j<M;j++) {
-            y_envelope = sqrt( yr[j*number_symbols+i]*yr[j*number_symbols+i]/(v_est*v_est));
+            y_envelope = sqrtf( yr[j*number_symbols+i]*yr[j*number_symbols+i]/(v_est*v_est));
             out[i*M+j] = logbesseli0( scale_factor*y_envelope );
         }
     }

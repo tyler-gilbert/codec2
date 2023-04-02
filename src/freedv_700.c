@@ -38,7 +38,7 @@
 extern char *ofdm_statemode[];
 
 void freedv_700c_open(struct freedv *f) {
-    f->snr_squelch_thresh = 0.0;
+    f->snr_squelch_thresh = 0.0f;
     f->squelch_en = false;
 
     f->cohpsk = cohpsk_create();
@@ -85,7 +85,7 @@ void freedv_comptx_700c(struct freedv *f, COMP mod_out[]) {
     /* cohpsk modulator */
     cohpsk_mod(f->cohpsk, tx_fdm, tx_bits, COHPSK_BITS_PER_FRAME);
 
-    float gain = 1.0;
+    float gain = 1.0f;
     if (f->clip_en) {
         cohpsk_clip(tx_fdm, COHPSK_CLIP, COHPSK_NOM_SAMPLES_PER_FRAME);
         gain = 2.5;
@@ -97,7 +97,7 @@ void freedv_comptx_700c(struct freedv *f, COMP mod_out[]) {
 
 // open function for OFDM voice modes
 void freedv_ofdm_voice_open(struct freedv *f, char *mode) {
-    f->snr_squelch_thresh = 0.0;
+    f->snr_squelch_thresh = 0.0f;
     f->squelch_en = false;
     struct OFDM_CONFIG *ofdm_config = (struct OFDM_CONFIG *) calloc(1, sizeof (struct OFDM_CONFIG));
     assert(ofdm_config != NULL);
@@ -126,8 +126,8 @@ void freedv_ofdm_voice_open(struct freedv *f, char *mode) {
     f->rx_amps = (float*)MALLOC(sizeof(float) * Nsymsperpacket);
     assert(f->rx_amps != NULL);
     for(int i=0; i<Nsymsperpacket; i++) {
-        f->rx_syms[i].real = f->rx_syms[i].imag = 0.0;
-        f->rx_amps[i]= 0.0;
+        f->rx_syms[i].real = f->rx_syms[i].imag = 0.0f;
+        f->rx_amps[i]= 0.0f;
     }
 
     f->nin = f->nin_prev = ofdm_get_samples_per_frame(f->ofdm);
@@ -201,8 +201,8 @@ void freedv_ofdm_data_open(struct freedv *f) {
     f->rx_amps = (float*)MALLOC(sizeof(float) * Nsymsperpacket);
     assert(f->rx_amps != NULL);
     for(int i=0; i<Nsymsperpacket; i++) {
-        f->rx_syms[i].real = f->rx_syms[i].imag = 0.0;
-        f->rx_amps[i]= 0.0;
+        f->rx_syms[i].real = f->rx_syms[i].imag = 0.0f;
+        f->rx_amps[i]= 0.0f;
     }
 
     f->nin = f->nin_prev = ofdm_get_nin(f->ofdm);
@@ -281,7 +281,7 @@ int freedv_comprx_700c(struct freedv *f, COMP demod_in_8kHz[]) {
     i = quisk_cfInterpDecim((complex float *)demod_in, freedv_nin(f), f->ptFilter8000to7500, 15, 16);
 
     for(i=0; i<f->nin; i++)
-        demod_in[i] = fcmult(1.0/COHPSK_SCALE, demod_in[i]);
+        demod_in[i] = fcmult(1.0f/COHPSK_SCALE, demod_in[i]);
 
     float rx_soft_bits[COHPSK_BITS_PER_FRAME];
 
@@ -310,7 +310,7 @@ int freedv_comprx_700c(struct freedv *f, COMP demod_in_8kHz[]) {
 
                 char rx_bits_char[COHPSK_BITS_PER_FRAME];
                 for(i=0; i<COHPSK_BITS_PER_FRAME; i++)
-                    rx_bits_char[i] = rx_soft_bits[i] < 0.0;
+                    rx_bits_char[i] = rx_soft_bits[i] < 0.0f;
                 cohpsk_put_test_bits(f->cohpsk, &f->test_frame_sync_state, error_pattern, &bit_errors, rx_bits_char, 0);
                 if (f->test_frame_sync_state) {
                     f->total_bit_errors += bit_errors;
@@ -332,7 +332,7 @@ int freedv_comprx_700c(struct freedv *f, COMP demod_in_8kHz[]) {
 
                 float *rx_bits_lower = cohpsk_get_rx_bits_lower(f->cohpsk);
                 for(i=0; i<COHPSK_BITS_PER_FRAME; i++) {
-                    rx_bits_char[i] = rx_bits_lower[i] < 0.0;
+                    rx_bits_char[i] = rx_bits_lower[i] < 0.0f;
                 }
                 cohpsk_put_test_bits(f->cohpsk, &f->test_frame_sync_state, error_pattern, &bit_errors_lower, rx_bits_char, 0);
 
@@ -340,7 +340,7 @@ int freedv_comprx_700c(struct freedv *f, COMP demod_in_8kHz[]) {
 
                 float *rx_bits_upper = cohpsk_get_rx_bits_upper(f->cohpsk);
                 for(i=0; i<COHPSK_BITS_PER_FRAME; i++) {
-                    rx_bits_char[i] = rx_bits_upper[i] < 0.0;
+                    rx_bits_char[i] = rx_bits_upper[i] < 0.0f;
                 }
                 cohpsk_put_test_bits(f->cohpsk, &f->test_frame_sync_state_upper, &error_pattern[COHPSK_BITS_PER_FRAME], &bit_errors_upper, rx_bits_char, 1);
 
@@ -403,7 +403,7 @@ int freedv_comp_short_rx_ofdm(struct freedv *f, void *demod_in_8kHz, int demod_i
     assert((demod_in_is_short == 0) || (demod_in_is_short == 1));
 
     int rx_status = 0;
-    float EsNo = 3.0;    /* further work: estimate this properly from signal */
+    float EsNo = 3.0f;    /* further work: estimate this properly from signal */
     f->sync = 0;
     
     /* looking for OFDM modem sync */
@@ -412,7 +412,7 @@ int freedv_comp_short_rx_ofdm(struct freedv *f, void *demod_in_8kHz, int demod_i
             ofdm_sync_search_shorts(f->ofdm, (short*)demod_in_8kHz, new_gain);
         else
             ofdm_sync_search(f->ofdm, (COMP*)demod_in_8kHz);
-        f->snr_est = -5.0;
+        f->snr_est = -5.0f;
     }
 
     if ((ofdm->sync_state == synced) || (ofdm->sync_state == trial)) {

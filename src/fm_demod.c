@@ -73,9 +73,9 @@ int main(int argc, char *argv[])
     }
 
     fm         = fm_create(N);
-    fm->Fs     = 48000.0;
-    fm->fm_max = 3000.0;
-    fm->fd     = 5000.0;
+    fm->Fs     = 48000.0f;
+    fm->fm_max = 3000.0f;
+    fm->fd     = 5000.0f;
     fm->fc     = 0;
 
     while(fread(buf, sizeof(short), N, fin) == N) {

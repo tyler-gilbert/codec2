@@ -169,7 +169,7 @@ void freedv_fsk_ldpc_open(struct freedv *f, struct freedv_advanced *adv) {
     f->twoframes_hard = MALLOC(2*bits_per_frame); assert(f->twoframes_hard != NULL);
     memset(f->twoframes_hard, 0, 2*bits_per_frame);
     f->twoframes_llr = (float*)MALLOC(2*bits_per_frame*sizeof(float)); assert(f->twoframes_llr != NULL);
-    for(int i=0; i<2*bits_per_frame; i++) f->twoframes_llr[i] = 0.0;
+    for(int i=0; i<2*bits_per_frame; i++) f->twoframes_llr[i] = 0.0f;
 
     /* currently configured a simple frame-frame approach */
     f->fsk_ldpc_thresh1 = 5;
@@ -179,8 +179,8 @@ void freedv_fsk_ldpc_open(struct freedv *f, struct freedv_advanced *adv) {
     //fprintf(stderr, "thresh1: %d thresh2: %d\n", f->fsk_ldpc_thresh1, f->fsk_ldpc_thresh2);
     f->fsk_ldpc_baduw = 0;
     f->fsk_ldpc_best_location = 0;  f->fsk_ldpc_state = 0;
-    f->fsk_ldpc_snr = 1.0;
-    f->fsk_S[0] = f->fsk_S[1] = f->fsk_N[0] = f->fsk_N[1] = 0.0;
+    f->fsk_ldpc_snr = 1.0f;
+    f->fsk_S[0] = f->fsk_S[1] = f->fsk_N[0] = f->fsk_N[1] = 0.0f;
 }
 
 
@@ -449,7 +449,7 @@ int freedv_rx_fsk_ldpc_data(struct freedv *f, COMP demod_in[]) {
            that were placed at the end of the buffer.  We delay this
            by one frame to report the SNR of the frame we are
            currently decoding */
-        f->snr_est = (double)10.0*log10(f->fsk_ldpc_snr);
+        f->snr_est = (double)10.0f*log10f(f->fsk_ldpc_snr);
         f->fsk_ldpc_snr = fsk->SNRest;
         f->fsk_S[0] = f->fsk_S[1]; f->fsk_N[0] = f->fsk_N[1];
         /* also store delayed versions of signal and noise power, useful for channel estimation */
@@ -581,7 +581,7 @@ int freedv_comprx_fsk(struct freedv *f, COMP demod_in[]) {
 	fsk_demod(f->fsk,(uint8_t*)f->tx_bits,demod_in);
         f->nin = fsk_nin(f->fsk);
         float EbNodB = f->fsk->stats->snr_est;           /* fsk demod actually estimates Eb/No     */
-        f->snr_est = EbNodB + 10.0*log10f(800.0/3000.0); /* so convert to SNR Rb=800, noise B=3000 */
+        f->snr_est = EbNodB + 10.0f*log10f(800.0f/3000.0); /* so convert to SNR Rb=800, noise B=3000 */
     } else{
         /* 2400B needs real input samples */
         int n = fmfsk_nin(f->fmfsk);
