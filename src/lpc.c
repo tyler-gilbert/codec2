@@ -107,7 +107,7 @@ void hanning_window(
   int i;	/* loop variable */
 
   for(i=0; i<Nsam; i++)
-    Wn[i] = Sn[i]*(0.5 - 0.5f*cosf(2*PI*(float)i/(Nsam-1)));
+    Wn[i] = Sn[i]*(0.5f - 0.5f*cosf(2*PI*(float)i/(Nsam-1)));
 }
 
 /*---------------------------------------------------------------------------*\
@@ -167,7 +167,7 @@ void levinson_durbin(
     for(j=1; j<=i-1; j++)
       sum += a[i-1][j]*R[i-j];
     k = -1.0f*(R[i] + sum)/e;		/* Equation 38b, Makhoul */
-    if (fabsf(k) > 1.0)
+    if (fabsf(k) > 1.0f)
       k = 0.0f;
 
     a[i][i] = k;
@@ -279,8 +279,8 @@ void find_aks(
   *E = 0.0f;
   for(i=0; i<=order; i++)
     *E += a[i]*R[i];
-  if (*E < 0.0)
-    *E = 1E-12;
+  if (*E < 0.0f)
+    *E = 1E-12f;
 }
 
 /*---------------------------------------------------------------------------*\

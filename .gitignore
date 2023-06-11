@@ -7,3 +7,4 @@ stm32/unittest/src/*.map
 stm32/unittest/test_run/
 *.pyc
 build-*
+.idea/

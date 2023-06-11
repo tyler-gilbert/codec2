@@ -89,6 +89,11 @@
 
 struct CODEC2;
 
+void codec2_set_heap(void * heap, size_t heap_size);
+void codec2_set_heap_changed_callback(void (*handler)(const char *));
+size_t codec2_get_heap_count();
+size_t codec2_get_maximum_usage();
+
 struct CODEC2 *codec2_create(int mode);
 void codec2_destroy(struct CODEC2 *codec2_state);
 void codec2_encode(struct CODEC2 *codec2_state, unsigned char bytes[], const short speech_in[]);

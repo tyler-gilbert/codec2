@@ -300,7 +300,6 @@ src/sm1000_leds_switches.c
 src/debugblinky.c
 src/stm32f4_vrom.c
 src/stm32f4_usart.c
-src/memtools.c
 )
 
 list(APPEND SM1000_SRCS ${CODEC2_SRCS})

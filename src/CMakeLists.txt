@@ -149,6 +149,7 @@ add_custom_command(
 #
 
 set(CODEC2_SRCS
+    bump_allocator.c
     dump.c
     lpc.c
     nlp.c
@@ -158,6 +159,7 @@ set(CODEC2_SRCS
     codec2_fft.c
     cohpsk.c
     codec2_fifo.c
+    codec2_allocator.c
     fdmdv.c
     fm.c
     fsk.c
