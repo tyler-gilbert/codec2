@@ -29,8 +29,10 @@ extern "C" {
 #define KISS_FFT_MALLOC(nbytes) _mm_malloc(nbytes,16)
 #define KISS_FFT_FREE _mm_free
 #else
-#define KISS_FFT_MALLOC malloc
-#define KISS_FFT_FREE free
+extern void* codec2_malloc(size_t size);
+extern void codec2_free(void* ptr);
+#define KISS_FFT_MALLOC codec2_malloc
+#define KISS_FFT_FREE codec2_free
 #endif
 
 

@@ -89,10 +89,17 @@
 
 struct CODEC2;
 
-void codec2_set_heap(void * heap, size_t heap_size);
+void codec2_set_heap(void * heap, unsigned int heap_size);
 void codec2_set_heap_changed_callback(void (*handler)(const char *));
-size_t codec2_get_heap_count();
-size_t codec2_get_maximum_usage();
+
+typedef struct {
+    unsigned int count;
+    unsigned int size;
+    unsigned int head;
+    unsigned int maximum_usage;
+} heap_info_t;
+
+void codec2_get_heap_info(heap_info_t * dest);
 
 struct CODEC2 *codec2_create(int mode);
 void codec2_destroy(struct CODEC2 *codec2_state);
