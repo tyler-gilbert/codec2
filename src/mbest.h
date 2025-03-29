@@ -49,6 +49,5 @@ void mbest_insert(struct MBEST *mbest, int index[], float error);
 void mbest_search(const float  *cb, float vec[], int k, int m, struct MBEST *mbest, int index[]);
 void mbest_search450(const float  *cb, float vec[], float w[], int k,int shorterK, int m, struct MBEST *mbest, int index[]);
 
-void mbest_print(char title[], struct MBEST *mbest);
 
 #endif

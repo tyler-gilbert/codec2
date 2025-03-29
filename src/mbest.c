@@ -101,18 +101,6 @@ void mbest_insert(struct MBEST *mbest, int index[], float error) {
 }
 
 
-void mbest_print(char title[], struct MBEST *mbest) {
-    int i,j;
-
-    fprintf(stderr, "%s\n", title);
-    for(i=0; i<mbest->entries; i++) {
-	for(j=0; j<MBEST_STAGES; j++)
-	    fprintf(stderr, "  %4d ", mbest->list[i].index[j]);
-	fprintf(stderr, " %f\n", (double)mbest->list[i].error);
-    }
-}
-
-
 /*---------------------------------------------------------------------------*\
 
   mbest_search
