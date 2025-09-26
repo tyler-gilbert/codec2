@@ -8,7 +8,7 @@
 static bump_allocator_t bump_allocator;
 
 void codec2_set_heap(void * heap, unsigned int heap_size){
-    if(bump_allocator.heap == NULL) {
+    if((bump_allocator.heap == NULL) || (heap == NULL)) {
         bump_allocator_initialize(&bump_allocator, heap, (size_t) heap_size);
     }
 }
